@@ -1,0 +1,8 @@
+local rect = require("rect")
+local rect1 = rect(4,3,2,2)
+local rect2 = rect(3,4,2,2)
+local rect3 = rect(5,2,1,4)
+assert(rect1:collide(rect2),"rect1 not collide with rect2")
+assert(rect2:collide(rect1),"rect2 not collide with rect1")
+assert(rect3:collide(rect1),"rect3 not collide with rect1")
+assert(rect3:collide(rect2),"rect3 not collide with rect2")
