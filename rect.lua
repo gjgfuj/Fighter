@@ -16,7 +16,7 @@ function rect:__basecollide(other)
 end
 function rect:__call(x,y,width,height)
 	nt = {x=x,y=y,width=width,height=height,endx=x+width,endy=y+height}
-	setmetatable(nt,rect)
+	setmetatable(nt,self)
 	return nt
 end
 return rect
