@@ -1,5 +1,6 @@
 local rect = require("rect")
 local char = {}
+setmetatable(char,char)
 function char:__index(key)
 	return rawget(char,key)
 end
