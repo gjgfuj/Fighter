@@ -5,12 +5,18 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call()
-	c = {}
+	c = {"hurtboxes" = {}}
 	setmetatable(c,char)
 	return c
 end
-local hitbox = {}
-setmetatable(hitbox,hitbox)
-hitbox.__index = rect
-char.hitbox = hitbox
+function char:addHurtbox(h)
+	table.insert(self.hurtboxes,h)
+end
+local hurtbox = {}
+setmetatable(hurtbox,hurtbox)
+hurtbox.__index = rect
+function hurtbox:__call(x,y,width,height)
+	return rect(x,y,width,height)
+end 
+char.hurtbox = hurtbox
 return char
