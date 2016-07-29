@@ -5,13 +5,15 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call()
-	c = {"hurtboxes" = {}}
+	c = {["hurtboxes"] = {}}
 	setmetatable(c,char)
 	return c
 end
 function char:addHurtbox(h)
 	table.insert(self.hurtboxes,h)
 end
+
+--inner class hurtbox
 local hurtbox = {}
 setmetatable(hurtbox,hurtbox)
 hurtbox.__index = rect
