@@ -4,13 +4,30 @@ setmetatable(char,char)
 function char:__index(key)
 	return rawget(char,key)
 end
-function char:__call()
-	c = {["hurtboxes"] = {}}
+function char:__call(nx,ny)
+	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {}}
 	setmetatable(c,char)
 	return c
 end
-function char:addHurtbox(h)
-	table.insert(self.hurtboxes,h)
+function char:addHurtbox(hx,hy,width,height)
+	table.insert(self.hurtboxes,char.hurtbox(x+hx,y+hy,width,height)) -- place the hurtboxes in the relative grid
+	-- This makes initializing hurtboxes consistent regardless of character position
+end
+
+function char:move(xVel,yVel)
+    --change character coordinates
+	self.x = self.x+xVel
+	self.y = self.y+yVel
+	--move all Hurtboxes
+	for k,v in ipairs(self.hurtboxes) do
+	v.x = v.x+xVel
+	v.y = v.y+yVel
+	end
+end
+
+function char:draw()
+    if(self.image) then love.graphics.draw(self.image,self.x,self.y) end  --draw the sprite if avlaiabale
+	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end -- draw hurtboxes for debugging
 end
 
 --inner class hurtbox
