@@ -10,7 +10,7 @@ function char:__call(nx,ny)
 	return c
 end
 function char:addHurtbox(hx,hy,width,height)
-	table.insert(self.hurtboxes,char.hurtbox(x+hx,y+hy,width,height)) -- place the hurtboxes in the relative grid
+	table.insert(self.hurtboxes,char.hurtbox(self.x+hx,self.y+hy,width,height)) -- place the hurtboxes in the relative grid
 	-- This makes initializing hurtboxes consistent regardless of character position
 end
 

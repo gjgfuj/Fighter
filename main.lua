@@ -2,12 +2,10 @@ function love.load()
 	rect = require "rect"
 	char = require "char"
 	
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop"})
 	image = love.graphics.newImage("Images/Brett.png")
 	speed = 500
 	
-	x = 20;
-	y = 20;
-
 	c1 = char(20,20)
 	--hardcode hurtboxes here
 	c1:addHurtbox(60,2,80,88)
@@ -26,7 +24,6 @@ function love.load()
 end
 
 function love.draw()
-	love.graphics.print("I love TOVG!",x,y);
 	love.graphics.print(love.timer.getFPS(),0,0)
 	c1:draw();
 end
