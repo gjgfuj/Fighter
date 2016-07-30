@@ -2,11 +2,11 @@ function love.load()
 	rect = require "rect"
 	char = require "char"
 	
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop"})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = false})
 	image = love.graphics.newImage("Images/Brett.png")
 	speed = 500
 	
-	c1 = char(20,20)
+	c1 = char(635,600)
 	--hardcode hurtboxes here
 	c1:addHurtbox(60,2,80,88)
 	c1:addHurtbox(14,91,147,65)
@@ -21,21 +21,24 @@ function love.load()
 	c1:addHurtbox(175,60,39,29)
 	c1:addHurtbox(180,22,44,37)
 	c1.image = image
+	
+	love.graphics.setBackgroundColor(0,53,255)
 end
 
 function love.draw()
-	love.graphics.print(love.timer.getFPS(),0,0)
+    love.graphics.setColor(0,38,153)
+	love.graphics.rectangle("fill",0,900,1920,180)
+	love.graphics.setColor(255,255,255)
+	love.graphics.print("FPS:"..love.timer.getFPS(),0,0)
 	c1:draw();
 end
 
 function love.update(dt)
-		if a_down and not d_down then c1:move(-speed*dt,0)  -- horizontal movement
+		if a_down and not d_down then c1:move(-speed*dt*0.75,0)  -- horizontal movement
 		elseif d_down and not a_down then c1:move(speed*dt,0) end
 		
-		if w_down and not s_down then c1:move(0,-speed*dt) -- vertical movement
-		elseif s_down and not w_down then c1:move(0,speed*dt) end
-		
-		deltaTime = dt
+		--if w_down and not s_down then c1:move(0,-speed*dt) -- vertical movement(disabled because that will be jumping)
+		--elseif s_down and not w_down then c1:move(0,speed*dt) end
 end
 
 function love.keypressed(key) 

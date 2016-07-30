@@ -26,7 +26,10 @@ function char:move(xVel,yVel)
 end
 
 function char:draw()
-    if(self.image) then love.graphics.draw(self.image,self.x,self.y) end  --draw the sprite if avlaiabale
+    love.graphics.setColor(255,255,255) -- set color to white
+    love.graphics.print("x:"..self.x.." y:"..self.y,self.x+10,self.y-15)
+    if(self.image) then love.graphics.draw(self.image,self.x,self.y) end  --draw the sprite if available
+	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end -- draw hurtboxes for debugging
 end
 
