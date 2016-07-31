@@ -5,7 +5,7 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny)
-	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {}, ["lookingRight"]=true, ["width"] = 0}
+	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {},["collisionboxes"] = {}, ["lookingRight"]=true, ["width"] = 0}
 	setmetatable(c,char)
 	return c
 end
@@ -13,6 +13,12 @@ function char:addHurtbox(hx,hy,width,height)
 	table.insert(self.hurtboxes,char.hurtbox(self.x+hx,self.y+hy,width,height)) -- place the hurtboxes in the relative grid
 	-- This makes initializing hurtboxes consistent regardless of character position
 end
+
+function char:addCollisionbox(hx,hy,width,height)
+	table.insert(self.collisionboxes,rect(self.x+hx,self.y+hy,width,height)) -- place the hurtboxes in the relative grid
+	-- Probably refactor since these two functions are same
+end
+
 
 function char:move(xVel,yVel)
     --change character coordinates
@@ -23,27 +29,42 @@ function char:move(xVel,yVel)
 	v.x = v.x+xVel
 	v.y = v.y+yVel
 	end
+	for k,v in ipairs(self.collisionboxes) do
+	v.x = v.x+xVel
+	v.y = v.y+yVel
+	end
+end
+
+--the two functions below definitely need to be cleaned up
+local function flipBox(box,width,self)-- takes a rect and flips it width refers to the width of the character!
+	local nx = box.x-self.x --get the hurtboxe's "local" coordinates
+		nx = nx+box.width --get the upper right corner
+		nx = nx-width  --move the y axis to the middle of the character
+		box.x=-nx+self.x --mirror the upper right corner,as width and height stay the same it falls into place
 end
 
 function char:flip(width)--this one's most likely temporary
 	self.lookingRight = not self.lookingRight
 	self.width = width
 	for k,v in ipairs(self.hurtboxes) do 
-		local nx = v.x-self.x --get the hurtboxe's "local" coordinates
-		nx = nx+v.width --get the upper right corner
-		nx = nx-width  --move the y axis to the middle of the character
-		v.x=-nx+self.x --mirror the upper right corner,as width and height stay the same it falls into place
+		flipBox(v,width,self)
+	end
+	for k,v in ipairs(self.collisionboxes) do
+		flipBox(v,width,self)
 	end
 end
 
-function char:draw()
+function char:draw(coord,name)
     love.graphics.setColor(255,255,255) -- set color to white
-    love.graphics.print("x:"..self.x.." y:"..self.y,self.x+10,self.y-15)
+    love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
+	love.graphics.print(name,self.x,self.y)
     if(self.image) then 
 		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
 		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end
 	love.graphics.setColor(255,0,0)--set color to red
-	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end -- draw hurtboxes for debugging
+	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
+	love.graphics.setColor(0,255,0)
+	for k,v in ipairs(self.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 end
 
 --inner class hurtbox
@@ -54,4 +75,5 @@ function hurtbox:__call(x,y,width,height)
 	return rect(x,y,width,height)
 end 
 char.hurtbox = hurtbox
+
 return char

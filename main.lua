@@ -20,6 +20,8 @@ function love.load()
 	c1:addHurtbox(162,90,53,57)
 	c1:addHurtbox(175,60,39,29)
 	c1:addHurtbox(180,22,44,37)
+	c1:addCollisionbox(14,90,157,315)
+	c1:addCollisionbox(60,2,80,88)
 	c1.image = image
 	
 	c2 = char(967,600)
@@ -36,8 +38,9 @@ function love.load()
 	c2:addHurtbox(162,90,53,57)
 	c2:addHurtbox(175,60,39,29)
 	c2:addHurtbox(180,22,44,37)
+	c2:addCollisionbox(14,90,157,315)
+	c2:addCollisionbox(60,2,80,88)
 	c2.image = image
-	c2:flip(image:getWidth())
 	
 	love.graphics.setBackgroundColor(0,53,255)
 end
@@ -48,13 +51,43 @@ function love.draw()
 	love.graphics.setColor(255,255,255)
 	love.graphics.print("FPS:"..love.timer.getFPS(),0,0)
 	love.graphics.print(image:getWidth(),200,0)	
-	c1:draw();
-	c2:draw()
+	c1:draw(500,"c1")
+	c2:draw(1000,"c2")
 end
 
 function love.update(dt)
-		if a_down and not d_down then c1:move(-speed*dt*0.75,0)  -- horizontal movement
-		elseif d_down and not a_down then c1:move(speed*dt,0) end
+		if a_down and not d_down then
+		    local leftCollision = false
+			local distance = speed*dt
+			for k,v in ipairs(c1.collisionboxes) do
+				for k2,v2 in ipairs (c2.collisionboxes) do
+					if(v:collide(v2) and v2.x <= v.x) then 
+						leftCollision = true
+						break
+					end
+				end
+			end
+			if(not leftCollision) then
+				c1:move(-distance,0)  -- horizontal movement
+			end		
+		elseif d_down and not a_down then
+		    local rightCollision = false
+			local distance = speed*dt
+			for k,v in ipairs(c1.collisionboxes) do
+			    print(k..","..v.x..","..v.y..","..v.width..","..v.height)
+				for k2,v2 in ipairs (c2.collisionboxes) do
+					print(k2..","..v2.x..","..v2.y..","..v2.width..","..v2.height)
+					print(c1.collisionboxes[1]:collide(c2.collisionboxes[1]))
+					if(v:collide(v2) and v2.x + v2.width >= v.x+ v.width) then 
+						rightCollision = true
+						break
+					end
+				end
+			end
+			if(not rightCollision) then
+				c1:move(distance,0)  -- horizontal movement
+			end
+		end
 		
 		if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(image:getWidth()) -- make characters always face each other
 		elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(image:getWidth()) end
