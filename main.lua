@@ -1,10 +1,15 @@
 function love.load()
 	rect = require "rect"
 	char = require "char"
+	idle = require "idle"
 	
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = false})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 	image = love.graphics.newImage("Images/Brett.png")
 	speed = 500
+	
+	dtTotal = 0
+	
+	inputs = {}
 	
 	c1 = char(537,600)
 	--hardcode hurtboxes here
@@ -42,6 +47,8 @@ function love.load()
 	c2:addCollisionbox(60,2,80,88)
 	c2.image = image
 	
+	c1.state = idle(c1,c2)
+	
 	love.graphics.setBackgroundColor(0,53,255)
 end
 
@@ -55,57 +62,29 @@ function love.draw()
 	c2:draw(1000,"c2")
 end
 
+local function handleMovement(dt)
+
+end
+
 function love.update(dt)
-		if a_down and not d_down then
-		    local leftCollision = false
-			local distance = speed*dt
-			for k,v in ipairs(c1.collisionboxes) do
-				for k2,v2 in ipairs (c2.collisionboxes) do
-					if(v:collide(v2) and v2.x <= v.x) then 
-						leftCollision = true
-						break
-					end
-				end
-			end
-			if(not leftCollision) then
-				c1:move(-distance,0)  -- horizontal movement
-			end		
-		elseif d_down and not a_down then
-		    local rightCollision = false
-			local distance = speed*dt
-			for k,v in ipairs(c1.collisionboxes) do
-			    print(k..","..v.x..","..v.y..","..v.width..","..v.height)
-				for k2,v2 in ipairs (c2.collisionboxes) do
-					print(k2..","..v2.x..","..v2.y..","..v2.width..","..v2.height)
-					print(c1.collisionboxes[1]:collide(c2.collisionboxes[1]))
-					if(v:collide(v2) and v2.x + v2.width >= v.x+ v.width) then 
-						rightCollision = true
-						break
-					end
-				end
-			end
-			if(not rightCollision) then
-				c1:move(distance,0)  -- horizontal movement
-			end
-		end
+    dtTotal = dtTotal+dt
+	if(dtTotal >= 1/60) then
+		dtTotal = 0
 		
+		c1.state:handleInput(inputs)
+	
 		if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(image:getWidth()) -- make characters always face each other
 		elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(image:getWidth()) end
 		
 		--if w_down and not s_down then c1:move(0,-speed*dt) -- vertical movement(disabled because that will be jumping)
 		--elseif s_down and not w_down then c1:move(0,speed*dt) end
+	end
 end
 
 function love.keypressed(key) 
-	if key == 'a' then a_down = true  -- these booleans allow the update function
-	elseif key == 'd' then d_down = true -- to see whether a key is currently held
-	elseif key == 'w' then w_down = true
-	elseif key == 's' then s_down = true end
+	inputs[key] = true
 	end
 	
 function love.keyreleased(key)
-	if key == 'a' then a_down = false  -- just reset when they are released
-	elseif key == 'd' then d_down = false
-	elseif key == 'w' then w_down = false
-	elseif key == 's' then s_down = false end
+	inputs[key] = false
 	end
