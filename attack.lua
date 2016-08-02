@@ -45,7 +45,7 @@ function attack:resolveHit()
 end
 
 function attack:draw()
-	if self.hitboxes then
+	if self.hitboxes and self.frames_passed >= self.startup and self.frames_passed <= self.startup+ self.active then
 		love.graphics.setColor(0,255,255)
 		for k,v in ipairs(self.hitboxes) do
 			love.graphics.rectangle("line",v.x,v.y,v.width,v.height)
