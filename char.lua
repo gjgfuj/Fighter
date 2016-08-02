@@ -26,12 +26,12 @@ function char:move(xVel,yVel)
 	self.y = self.y+yVel
 	--move all Hurtboxes
 	for k,v in ipairs(self.hurtboxes) do
-	v.x = v.x+xVel
-	v.y = v.y+yVel
+	v:setX(v.x+xVel)
+	v:setY(v.y+yVel)
 	end
 	for k,v in ipairs(self.collisionboxes) do
-	v.x = v.x+xVel
-	v.y = v.y+yVel
+	v:setX(v.x+xVel)
+	v:setY(v.y+yVel)
 	end
 end
 
@@ -40,7 +40,7 @@ local function flipBox(box,width,self)-- takes a rect and flips it width refers 
 	local nx = box.x-self.x --get the hurtboxe's "local" coordinates
 		nx = nx+box.width --get the upper right corner
 		nx = nx-width  --move the y axis to the middle of the character
-		box.x=-nx+self.x --mirror the upper right corner,as width and height stay the same it falls into place
+		box:setX(-nx+self.x) --mirror the upper right corner,as width and height stay the same it falls into place
 end
 
 function char:flip(width)--this one's most likely temporary
