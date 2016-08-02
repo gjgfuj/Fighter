@@ -11,11 +11,14 @@ function idle:__call(character1, character2)--character one is assumed to be the
 	return nt
 end
 
-function idle:handleInput(i)
-	print(i)
+function idle:handleInput(inputs)
+		if inputs['f'] then 
+			c1.state = attack(c1,c2,5,3,10,{rect(162+c1.x,90+c1.y,159,57)}) 
+			return 
+		end
 		if inputs['a'] and not inputs['d'] then
 		    local leftCollision = false
-			local distance = 500*(1/30)
+			local distance = 500*(1/60)
 			for k,v in ipairs(self.c1.collisionboxes) do
 				for k2,v2 in ipairs (self.c2.collisionboxes) do
 					if(v:collide(v2) and v2.x <= v.x) then 
@@ -29,7 +32,7 @@ function idle:handleInput(i)
 			end		
 		elseif inputs['d'] and not inputs['a'] then
 		    local rightCollision = false
-			local distance = speed*(1/30)
+			local distance = speed*(1/60)
 			for k,v in ipairs(self.c1.collisionboxes) do
 			    print(k..","..v.x..","..v.y..","..v.width..","..v.height)
 				for k2,v2 in ipairs (self.c2.collisionboxes) do

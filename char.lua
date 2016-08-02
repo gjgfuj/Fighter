@@ -60,11 +60,20 @@ function char:draw(coord,name)
 	love.graphics.print(name,self.x,self.y)
     if(self.image) then 
 		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
-		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end
-	love.graphics.setColor(255,0,0)--set color to red
-	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
+		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end	
 	love.graphics.setColor(0,255,0)
 	for k,v in ipairs(self.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
+	love.graphics.setColor(255,0,0)--set color to red
+	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
+	if self.state.draw then self.state:draw() end
+end
+
+function char:handleInput(inputs)
+	self.state:handleInput(inputs)
+end
+
+function char:update()
+	self.state:update()
 end
 
 --inner class hurtbox
