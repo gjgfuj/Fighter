@@ -53,7 +53,7 @@ end
 function love.load()
 	rect = require "rect"
 	char = require "char"
-	idle = require "idle"
+	standing = require "standing"
 	attack = require "attack"
 	
 	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
@@ -100,8 +100,8 @@ function love.load()
 	c2:addCollisionbox(60,2,80,88)
 	--c2.image = image
 	
-	c1.state = idle(c1,c2)
-	c2.state = idle(c2,c1)
+	c1.state = standing(c1,c2)
+	c2.state = standing(c2,c1)
 	
 	love.graphics.setBackgroundColor(0,53,255)
 end
@@ -111,14 +111,13 @@ function love.draw()
 	love.graphics.rectangle("fill",0,900,1920,180)
 	love.graphics.setColor(255,255,255)
 	love.graphics.print("FPS:"..love.timer.getFPS(),0,0)
-	love.graphics.print(image:getWidth(),200,0)	
 	c1:draw(500,"c1")
 	c2:draw(1000,"c2")
 end
 
 
-function love.update(dt)	
-		c1:handleInput(inputs)
+function love.update(dt)
+        c1:handleInput(inputs)	
 		c1:update()
 		c2:update()
 		
@@ -131,8 +130,7 @@ end
 
 function love.keypressed(key) 
 	inputs[key] = true
-	if key == "rctrl" then debug.debug() end
-	end
+end
 	
 function love.keyreleased(key)
 	inputs[key] = false

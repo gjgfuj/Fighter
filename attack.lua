@@ -19,15 +19,12 @@ function attack:handleInput(...)
 end
 
 function attack:update()
-	print(self.frames_passed)
     self.frames_passed = self.frames_passed + 1
 	if self.frames_passed <= self.startup then return --if you're still in startup frames do nothing
 	elseif self.frames_passed <= self.startup+self.active then -- if you're in active frames then check for collision
-	print("wat")
 		if self.hitboxes then 
 			for k1,v1 in ipairs(self.hitboxes) do
 				for k2,v2 in ipairs(self.c2.hurtboxes) do
-					print(v1:collide(v2))
 					if(v1:collide(v2)) then 
 						self:resolveHit()
 						self.hitboxes = nil -- when a hit occurs despawn the hitboxes
@@ -36,7 +33,7 @@ function attack:update()
 			end
 		end
 	elseif self.frames_passed <= self.startup+self.active+self.recovery then return --in recovery frames just do nothing again
-	else self.c1.state = idle(self.c1,self.c2) end --Once all of the attack's frames have passed return the player to idle state
+	else self.c1.state = standing(self.c1,self.c2) end --Once all of the attack's frames have passed return the player to standing state
 end
 
 function attack:resolveHit()

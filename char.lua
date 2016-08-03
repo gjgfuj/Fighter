@@ -19,9 +19,8 @@ function char:addCollisionbox(hx,hy,width,height)
 	-- Probably refactor since these two functions are same
 end
 
-
-function char:move(xVel,yVel)
-    --change character coordinates
+local function doMove(self,xVel,yVel)
+	 --change character coordinates
 	self.x = self.x+xVel
 	self.y = self.y+yVel
 	--move all Hurtboxes
@@ -33,6 +32,31 @@ function char:move(xVel,yVel)
 	v:setX(v.x+xVel)
 	v:setY(v.y+yVel)
 	end
+end
+
+local function checkCollision(self,collisionboxes,xVel,yVel)
+	if xVel < 0 then
+		for k,v in ipairs(self.collisionboxes) do
+			for k2,v2 in ipairs (collisionboxes) do
+				if(v:collide(v2) and v2.x <= v.x) then 
+					return true
+				end
+			end
+		end
+	elseif xVel > 0 then
+		for k,v in ipairs(self.collisionboxes) do
+			for k2,v2 in ipairs (collisionboxes) do
+				if(v:collide(v2) and v2.endx >= v.endx) then 
+					return true
+				end
+			end
+		end
+	end
+end
+function char:move(xVel,yVel,collisionboxes)
+	if(not checkCollision(self,collisionboxes,xVel,yVel)) then
+			doMove(self,xVel,yVel)
+	end		
 end
 
 --the two functions below definitely need to be cleaned up
@@ -57,11 +81,6 @@ end
 function char:draw(coord,name)
     love.graphics.setColor(255,255,255) -- set color to white
     love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
-	love.graphics.print(name,self.x,self.y)
-    if(self.image) then 
-		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
-		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end	
-	love.graphics.setColor(0,255,0)
 	for k,v in ipairs(self.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
@@ -74,6 +93,10 @@ end
 
 function char:update()
 	self.state:update()
+    if(self.image) then 
+		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
+		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end	
+	love.graphics.setColor(0,255,0)
 end
 
 --inner class hurtbox
