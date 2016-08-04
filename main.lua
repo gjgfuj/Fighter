@@ -124,6 +124,16 @@ function love.update(dt)
 		if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(image:getWidth()) -- make characters always face each other
 		elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(image:getWidth()) end
 		
+		if c1.nextState then
+			c1.state = c1.nextState
+			c1.nextState = nil
+		end
+		
+		if c2.nextState then
+			c2.state = c2.nextState
+			c2.nextState = nil
+		end
+		
 		--if w_down and not s_down then c1:move(0,-speed*dt) -- vertical movement(disabled because that will be jumping)
 		--elseif s_down and not w_down then c1:move(0,speed*dt) end
 end

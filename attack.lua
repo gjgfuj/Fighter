@@ -20,8 +20,9 @@ end
 
 function attack:update()
 	self.frames_passed = self.frames_passed + 1
-	if self.frames_passed <= self.startup then return --if you're still in startup frames do nothing
+	if self.frames_passed <= self.startup then if self.inStartup then self.inStartup() end --if you're still in startup frames do nothing
 	elseif self.frames_passed <= self.startup+self.active then -- if you're in active frames then check for collision
+		if self.beforeCollisionCheck then self.beforeCollisionCheck() end
 		if self.hitboxes then 
 			for k1,v1 in ipairs(self.hitboxes) do
 				for k2,v2 in ipairs(self.c2.hurtboxes) do
@@ -32,13 +33,19 @@ function attack:update()
 				end
 			end
 		end
-	elseif self.frames_passed <= self.startup+self.active+self.recovery then return --in recovery frames just do nothing again
+		if self.afterCollisionCheck then self.afterCollisionCheck() end
+	elseif self.frames_passed <= self.startup+self.active+self.recovery then if self.inRecovery then self.inRecovery() end --in recovery frames just do nothing again
 	else self.c1.state = standing(self.c1,self.c2) end --Once all of the attack's frames have passed return the player to standing state
 end
 
 function attack:resolveHit()
-	print("A hit has occured") --for now
-	if self.effect then c2.state = self.effect end --will have to find a way to distinguish jumping and standing,maybe inside the hitsun state
+	if self.c2:isBlocking() then
+		if self.blockEffect then self.c2:queueState(self.blockEffect) end
+		print("A hit has been blocked")
+	else 
+		if self.hitEffect then self.c2:queueState(self.hitEffect) end
+		print("A hit has occurred") --for now
+	end
 end
 
 function attack:draw()

@@ -59,6 +59,7 @@ function char:move(xVel,yVel,otherChar)
 			doMove(self,xVel,yVel)
 	else
 		doMove(self,xVel/2,yVel)
+		otherChar:move(xVel/2,yVel,self)
 	end		
 end
 
@@ -100,6 +101,14 @@ function char:update()
 		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
 		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end	
 	love.graphics.setColor(0,255,0)
+end
+
+function char:queueState(state)
+	self.nextState = state
+end
+
+function char:isBlocking()
+	return self.state:isBlocking()
 end
 
 --inner class hurtbox

@@ -27,4 +27,9 @@ function standing:update()
 	--probably where the standing/walking animation would be played
 end
 
+
+function standing:isBlocking()
+	if self.c1.lookingRight and inputs['d'] or not self.c1.lookingRight and inputs['a'] then return 'H' end
+end
+
 return standing
