@@ -34,18 +34,18 @@ local function doMove(self,xVel,yVel)
 	end
 end
 
-local function checkCollision(self,collisionboxes,xVel,yVel)
-	if xVel < 0 then
+local function checkCollision(self,otherChar,xVel,yVel)
+	if xVel < 0 then -- when moving to the left
 		for k,v in ipairs(self.collisionboxes) do
-			for k2,v2 in ipairs (collisionboxes) do
+			for k2,v2 in ipairs (otherChar.collisionboxes) do
 				if(v:collide(v2) and v2.x <= v.x) then 
 					return true
 				end
 			end
 		end
-	elseif xVel > 0 then
+	elseif xVel > 0 then --when moving to the right
 		for k,v in ipairs(self.collisionboxes) do
-			for k2,v2 in ipairs (collisionboxes) do
+			for k2,v2 in ipairs (otherChar.collisionboxes) do
 				if(v:collide(v2) and v2.endx >= v.endx) then 
 					return true
 				end
@@ -53,9 +53,12 @@ local function checkCollision(self,collisionboxes,xVel,yVel)
 		end
 	end
 end
-function char:move(xVel,yVel,collisionboxes)
-	if(not checkCollision(self,collisionboxes,xVel,yVel)) then
+
+function char:move(xVel,yVel,otherChar)
+	if(not checkCollision(self,otherChar,xVel,yVel)) then
 			doMove(self,xVel,yVel)
+	else
+		doMove(self,xVel/2,yVel)
 	end		
 end
 
@@ -79,8 +82,8 @@ function char:flip(width)--this one's most likely temporary
 end
 
 function char:draw(coord,name)
-    love.graphics.setColor(255,255,255) -- set color to white
-    love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
+	love.graphics.setColor(255,255,255) -- set color to white
+	love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
 	for k,v in ipairs(self.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
@@ -93,7 +96,7 @@ end
 
 function char:update()
 	self.state:update()
-    if(self.image) then 
+	if(self.image) then 
 		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
 		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end	
 	love.graphics.setColor(0,255,0)

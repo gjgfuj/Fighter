@@ -13,7 +13,7 @@ function love.run()
  
 	-- Main loop time.
 	while true do
-	    local start_time = love.timer.getTime()
+		local start_time = love.timer.getTime()
 		-- Process events.
 		if love.event then
 			love.event.pump()
@@ -32,7 +32,7 @@ function love.run()
 			love.timer.step()
 			dt = love.timer.getDelta()
 		end
-        
+		
 		-- Call update and draw
 		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
  
@@ -42,7 +42,7 @@ function love.run()
 			if love.draw then love.draw() end
 			love.graphics.present()
 		end
-        local end_time = love.timer.getTime()
+		local end_time = love.timer.getTime()
 		local frame_time = end_time - start_time
 		
 		if love.timer then love.timer.sleep(1/60-frame_time) end
@@ -107,7 +107,7 @@ function love.load()
 end
 
 function love.draw()
-    love.graphics.setColor(0,38,153)
+	love.graphics.setColor(0,38,153)
 	love.graphics.rectangle("fill",0,900,1920,180)
 	love.graphics.setColor(255,255,255)
 	love.graphics.print("FPS:"..love.timer.getFPS(),0,0)
@@ -117,7 +117,7 @@ end
 
 
 function love.update(dt)
-        c1:handleInput(inputs)	
+		c1:handleInput(inputs)	
 		c1:update()
 		c2:update()
 		
@@ -134,4 +134,4 @@ end
 	
 function love.keyreleased(key)
 	inputs[key] = false
-	end
+end

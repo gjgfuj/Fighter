@@ -19,7 +19,7 @@ function attack:handleInput(...)
 end
 
 function attack:update()
-    self.frames_passed = self.frames_passed + 1
+	self.frames_passed = self.frames_passed + 1
 	if self.frames_passed <= self.startup then return --if you're still in startup frames do nothing
 	elseif self.frames_passed <= self.startup+self.active then -- if you're in active frames then check for collision
 		if self.hitboxes then 
