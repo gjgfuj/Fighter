@@ -4,8 +4,8 @@ setmetatable(char,char)
 function char:__index(key)
 	return rawget(char,key)
 end
-function char:__call(nx,ny)
-	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {},["collisionboxes"] = {}, ["lookingRight"]=true, ["width"] = 0}
+function char:__call(nx,ny,handler)
+	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {},["collisionboxes"] = {}, ["lookingRight"]=true, ["width"] = 0, handler = handler}
 	setmetatable(c,char)
 	return c
 end
@@ -96,6 +96,7 @@ function char:handleInput(inputs)
 end
 
 function char:update()
+	self.handler:update()
 	self.state:update()
 	if(self.image) then 
 		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available

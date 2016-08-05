@@ -55,6 +55,7 @@ function love.load()
 	char = require "char"
 	standing = require "standing"
 	attack = require "attack"
+	inputHandler = require "inputHandler"
 	
 	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 	image = love.graphics.newImage("Images/Brett.png")
@@ -62,9 +63,11 @@ function love.load()
 	
 	dtTotal = 0
 	
-	inputs = {}
+	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', dr = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
+	local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
 	
-	c1 = char(537,600)
+	
+	c1 = char(537,600,handler)
 	--hardcode hurtboxes here
 	c1:addHurtbox(60,2,80,88)
 	c1:addHurtbox(14,91,147,65)
@@ -80,9 +83,8 @@ function love.load()
 	c1:addHurtbox(180,22,44,37)
 	c1:addCollisionbox(14,90,157,315)
 	c1:addCollisionbox(60,2,80,88)
-	--c1.image = image
 	
-	c2 = char(967,600)
+	c2 = char(967,600,inputHandler("brot",{}))
 	--hardcode hurtboxes here
 	c2:addHurtbox(60,2,80,88)
 	c2:addHurtbox(14,91,147,65)
@@ -98,11 +100,9 @@ function love.load()
 	c2:addHurtbox(180,22,44,37)
 	c2:addCollisionbox(14,90,157,315)
 	c2:addCollisionbox(60,2,80,88)
-	--c2.image = image
 	
 	c1.state = standing(c1,c2)
 	c2.state = standing(c2,c1)
-	
 	love.graphics.setBackgroundColor(0,53,255)
 end
 
@@ -136,12 +136,4 @@ function love.update(dt)
 		
 		--if w_down and not s_down then c1:move(0,-speed*dt) -- vertical movement(disabled because that will be jumping)
 		--elseif s_down and not w_down then c1:move(0,speed*dt) end
-end
-
-function love.keypressed(key) 
-	inputs[key] = true
-end
-	
-function love.keyreleased(key)
-	inputs[key] = false
 end

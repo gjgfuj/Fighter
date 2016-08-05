@@ -12,13 +12,14 @@ function standing:__call(character1, character2)--character one is assumed to be
 end
 
 function standing:handleInput(inputs)
-		if inputs['f'] then 
+		local input = self.c1.handler:requestInputs()
+		if input == "MP" then 
 			self.c1.state = attack(self.c1,self.c2,5,3,10,{rect(162+self.c1.x,90+self.c1.y,110,57)}) 
 			return 
 		end
-		if inputs['a'] and not inputs['d'] then
+		if self.c1.handler:isHeld('l') then 
 				self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement
-		elseif inputs['d'] and not inputs['a'] then
+		elseif self.c1.handler:isHeld('r') then 
 				self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
 		end
 end
