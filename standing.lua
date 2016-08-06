@@ -1,3 +1,5 @@
+local attack = require "attack"
+
 local standing = {}
 setmetatable(standing,standing)
 
@@ -12,8 +14,7 @@ function standing:__call(character1, character2)--character one is assumed to be
 end
 
 function standing:handleInput(inputs)
-		local input = self.c1.handler:requestInputs()
-		if input == "MP" then 
+		if self.c1.handler:isTapped('MP') then 
 			self.c1.state = attack(self.c1,self.c2,5,3,10,{rect(162+self.c1.x,90+self.c1.y,110,57)}) 
 			return 
 		end
@@ -30,7 +31,7 @@ end
 
 
 function standing:isBlocking()
-	if self.c1.lookingRight and inputs['d'] or not self.c1.lookingRight and inputs['a'] then return 'H' end
+	if self.c1.lookingRight and self.c1.handler:isHeld(l) or not self.c1.lookingRight and self.c1.handler:isHeld('r') then return 'H' end
 end
 
 return standing

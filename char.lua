@@ -1,4 +1,5 @@
 local rect = require("rect")
+
 local char = {}
 setmetatable(char,char)
 function char:__index(key)
@@ -96,8 +97,8 @@ function char:handleInput(inputs)
 end
 
 function char:update()
-	self.handler:update()
 	self.state:update()
+	self.handler:update()
 	if(self.image) then 
 		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
 		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end	

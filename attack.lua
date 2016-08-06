@@ -35,7 +35,7 @@ function attack:update()
 		end
 		if self.afterCollisionCheck then self.afterCollisionCheck() end
 	elseif self.frames_passed <= self.startup+self.active+self.recovery then if self.inRecovery then self.inRecovery() end --in recovery frames just do nothing again
-	else self.c1.state = standing(self.c1,self.c2) end --Once all of the attack's frames have passed return the player to standing state
+	else self.c1.state = require "standing"(self.c1,self.c2) end --Once all of the attack's frames have passed return the player to standing state
 end
 
 function attack:resolveHit()

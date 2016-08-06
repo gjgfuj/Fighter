@@ -1,3 +1,11 @@
+local rect = require "rect"
+local char = require "char"
+local standing = require "standing"
+local inputHandler = require "inputHandler"
+	
+local c1
+local c2
+
 function love.run()
  
 	if love.math then
@@ -51,17 +59,9 @@ function love.run()
 end
 
 function love.load()
-	rect = require "rect"
-	char = require "char"
-	standing = require "standing"
-	attack = require "attack"
-	inputHandler = require "inputHandler"
-	
 	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
-	image = love.graphics.newImage("Images/Brett.png")
-	speed = 500
-	
-	dtTotal = 0
+	local image = love.graphics.newImage("Images/Brett.png")
+	local speed = 500
 	
 	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', dr = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
 	local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
@@ -117,23 +117,24 @@ end
 
 
 function love.update(dt)
-		c1:handleInput(inputs)	
-		c1:update()
-		c2:update()
+	c1:handleInput(inputs)	
+	c1:update()
+	c2:update()
 		
-		if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(image:getWidth()) -- make characters always face each other
-		elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(image:getWidth()) end
+	if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(226) -- make characters always face each other
+	elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(226) end
 		
-		if c1.nextState then
-			c1.state = c1.nextState
-			c1.nextState = nil
-		end
-		
-		if c2.nextState then
-			c2.state = c2.nextState
-			c2.nextState = nil
-		end
-		
-		--if w_down and not s_down then c1:move(0,-speed*dt) -- vertical movement(disabled because that will be jumping)
-		--elseif s_down and not w_down then c1:move(0,speed*dt) end
+	if c1.nextState then
+		c1.state = c1.nextState
+		c1.nextState = nil
+	end
+	
+	if c2.nextState then
+		c2.state = c2.nextState
+		c2.nextState = nil
+	end
+end
+
+function love.keypressed(key)
+	if(key=="rctrl") then debug.debug() end
 end
