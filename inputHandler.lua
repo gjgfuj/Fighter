@@ -31,10 +31,7 @@ function inputHandler:isTapped(input,patterns)
 	for k,v in ipairs(self.inputList) do
 		if v.value == inp then index = k end
 	end
-	print(index)
 	local result = self.inputList[index]
-	if result then print (result.value..", "..result.timer) end
-	if result then print(result.timer) end
 	return result and result.timer == 60
 end
 
