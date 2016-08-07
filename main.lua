@@ -59,11 +59,11 @@ function love.run()
 end
 
 function love.load()
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = false})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	
-	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', dr = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
+	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
 	local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
 	
 	

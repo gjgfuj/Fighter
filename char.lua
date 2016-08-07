@@ -6,7 +6,7 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny,handler)
-	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {},["collisionboxes"] = {}, ["lookingRight"]=true, ["width"] = 0, handler = handler}
+	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {},["collisionboxes"] = {}, ["lookingRight"]=true, ["width"] = 0, handler = handler, word = "none"}
 	setmetatable(c,char)
 	return c
 end
@@ -86,6 +86,7 @@ end
 function char:draw(coord,name)
 	love.graphics.setColor(255,255,255) -- set color to white
 	love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
+	if self.state.word then love.graphics.print(self.state.word,self.x,self.y-50) end
 	for k,v in ipairs(self.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging

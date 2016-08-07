@@ -8,21 +8,23 @@ function standing:__index(key)
 end
 
 function standing:__call(character1, character2)--character one is assumed to be the character owning this state
-	nt = {["c1"] = character1, ["c2"] = character2}
+	nt = {["c1"] = character1, ["c2"] = character2, inputs = {["p,r,rd,d"] = function () self.word = "HADOUKEN" end, ["p,rd,d,r"] = function () self.word = "SHORYUKEN!" end}}
 	setmetatable(nt,standing)
 	return nt
 end
 
 function standing:handleInput(inputs)
-		if self.c1.handler:isTapped('MP') then 
-			self.c1.state = attack(self.c1,self.c2,5,3,10,{rect(162+self.c1.x,90+self.c1.y,110,57)}) 
-			return 
-		end
-		if self.c1.handler:isHeld('l') then 
-				self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement
-		elseif self.c1.handler:isHeld('r') then 
-				self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
-		end
+	yay = self.inputs[self.c1.handler:patternRecognition({"p,r,rd,d","p,rd,d,r"})]
+	if yay then yay() end
+	if self.c1.handler:isTapped('MP') then 
+		self.c1.state = attack(self.c1,self.c2,5,3,10,{rect(162+self.c1.x,90+self.c1.y,110,57)}) 			
+		return 
+	end
+	if self.c1.handler:isHeld('l') then 
+		self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement
+	elseif self.c1.handler:isHeld('r') then 
+		self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
+	end
 end
 
 function standing:update()
