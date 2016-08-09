@@ -59,7 +59,7 @@ function love.run()
 end
 
 function love.load()
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = false})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	

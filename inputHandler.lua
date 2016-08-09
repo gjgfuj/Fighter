@@ -3,6 +3,17 @@ local inputHandler = {}
 local inputHandlers = {} --a complete list of active inputHandlers
 setmetatable(inputHandler,inputHandler)
 
+local INPUT_PERSISTENCE = 30 -- constant indicating how many frames an input is remembered for input reading
+
+local function invertIpairs(array)
+	local i = #array
+	return function()
+		local buffer = i
+		i = i-1
+		if array[buffer] then return buffer,array[buffer] else return nil end
+	end
+end
+
 local function splitString(str,seperator)-- takes a string and returns a table of parts
 	local result = {}
 	for part in string.gmatch(str, "([^"..seperator.."]+)") do
@@ -27,31 +38,31 @@ function findPattern(input,pattern)--matches a single pattern to input
 	local wildcardSkips = 0 -- important for prioritizing
 	for i=#input,1,-1 do
 		if compare(pattern[1],input[i].value) then
-			patternBeginning = i
+			patternBeginning = i-- first, find where the pattern starts
 			break
 		end
 	end
 	if patternBeginning then 
 		for i = patternBeginning-1,1,-1 do
-			if pattern[patternIndex] == '*' then
+			if pattern[patternIndex] == '*' then -- If there is a wildcard check for the following symbol until you find it
 				if compare(pattern[patternIndex+1],input[i].value) then 
 					patternIndex = patternIndex+2
 				else
-					wildcardSkips = wildcardSkips +1
+					wildcardSkips = wildcardSkips +1 --keep track of how many times you had to skip for wildcards, that tells you how likely this one is to be the intended one
 				end
 			else
 				if compare(pattern[patternIndex],input[i].value) then
 					patternIndex = patternIndex+1
 				else 
-					return nil
+					return nil-- there's no wildcard so there can't be skips
 				end
 			end
-			if patternIndex >= #pattern then
+			if patternIndex >= #pattern then -- if the patternIndex is outside the pattern array the entire pattern has been found
 				return patternBeginning,wildcardSkips
 			end
 		end
 	end
-	return nil
+	return nil -- if the execution gets here the function must have run through the entire input without finding the pattern
 end
 
 function inputHandler:patternRecognition(patterns)--returns the pattern with the highest priority,or nil if none match
@@ -61,24 +72,17 @@ function inputHandler:patternRecognition(patterns)--returns the pattern with the
 	
 	for k,pattern in ipairs(patterns) do
 		local parts = splitString(pattern,",")
-		for i = 1,(#parts*2)-1,2 do
+		for i = 1,(#parts*2)-1,2 do-- put in the wildcards
 			table.insert(parts,i+1,'*')
 		end
-		pIndex,skips = findPattern(self.inputList,parts)
-		if pIndex and self.inputList[pIndex].timer == 60 then 
-			for k,v in ipairs(self.inputList) do print(k,v.value) end 
-			print("-----------")
-			print(pattern,skips,#pattern,pIndex)
-			print("-----------")
-		end
-		
-		if pIndex and self.inputList[pIndex].timer == 60 and not(currentPattern and (currentPatternStart<pIndex or wildcardSkips <= skips or #currentPattern > #pattern)) then
+		pIndex,skips = findPattern(self.inputList,parts) -- find the pattern
+		--check pattern priotity
+		if pIndex and self.inputList[pIndex].timer == INPUT_PERSISTENCE and not(currentPattern and (currentPatternStart<pIndex or wildcardSkips <= skips or #currentPattern > #pattern)) then
 			currentPattern = pattern
 			currentPatternStart = pIndex
 			wildcardSkips = skips
 		end
 	end
-	if currentPattern then print("NEWFRAME") end
 	return currentPattern
 end
 
@@ -87,7 +91,7 @@ function inputHandler:__index(k)
 end
 
 function inputHandler:__call(dv,mp)
-	nt = {mapping = mp, device = dv, inputList = {}, reverseMapping = {}, held = {}, __lastHat = 'c'} --inputList is a first-in-first-out structure recording inputs
+	local nt = {mapping = mp, device = dv, inputList = {}, reverseMapping = {}, held = {}, __lastHat = 'c'} --inputList is a first-in-first-out structure recording inputs
 	setmetatable(nt,inputHandler)
 	table.insert(inputHandlers,nt) --put the new instance into the list	
 	for k,v in pairs(nt.mapping) do
@@ -105,18 +109,32 @@ function inputHandler:update()
 end
 
 function inputHandler:isTapped(input,patterns)
-	local inp = self.reverseMapping[input]
 	local index
-	for k,v in ipairs(self.inputList) do
+	for k,v in invertIpairs(self.inputList) do
 		if v.value == input then index = k end
 	end
 	local result = self.inputList[index]
-	return result and result.timer == 60
+	return result and result.timer == INPUT_PERSISTENCE
 end
 
 
 function inputHandler:isHeld(input)
 	return self.held[input]
+end
+
+---input: the input to check
+--amount: The amount of taps asked
+--period: The period of times all taps must have occured in
+--The first input found is also required to be 'frame-fresh'
+function inputHandler:multiTap(input,amount,period)
+	local amountFound = 0
+	for k,v in invertIpairs(self.inputList) do
+		if v.value == input and (amountFound == 0 and v.timer >= INPUT_PERSISTENCE) or (amountFound >= 1 and v.timer >= (INPUT_PERSISTENCE-period)) then
+			amountFound = amountFound + 1
+			if amountFound >= amount then return true end
+		end
+	end
+	return false
 end
 
 function love.gamepadpressed(joystick, button)
@@ -147,7 +165,7 @@ function love.joystickhat(joystick, hat,direction)
 		if(v.device == joystick) then 
 			if v.mapping[direction] then table.insert(v.inputList,inputHandler.input(v.mapping[direction])) end
 			if v.mapping[v.lastHat] then v.held[v.mapping[v.lastHat]] = false end
-			v.lastHat = v.mapping[direction]
+			v.lastHat = v.mapping[direction] -- we need to remember the last position of the hat so we can reset the held status
 			if v.mapping[direction] then v.held[v.mapping[direction]] = true end
 		end
 	end
@@ -161,7 +179,7 @@ function input:__index(k)
 end
 
 function input:__call(v)
-	local nt = {value = v,timer = 60, active = true}
+	local nt = {value = v,timer = INPUT_PERSISTENCE, active = true}
 	setmetatable(nt,input)
 	return nt
 end
