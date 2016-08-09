@@ -16,7 +16,7 @@ end
 function standing:handleInput(inputs)
 	local yay = self.inputs[self.c1.handler:patternRecognition({"p,r,rd,d,r,rd,d","p,r,rd,d","p,rd,d,r"})]
 	if yay then yay(self) end
-	if self.c1.handler:multiTap('r',2,60) then
+	if self.c1.handler:multiTap('r',2,10) then
 		self.c1:move(500*1/60*10,0,self.c2)
 	end
 	if self.c1.handler:isTapped('MP') then 

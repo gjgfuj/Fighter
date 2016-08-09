@@ -101,7 +101,7 @@ function inputHandler:__call(dv,mp)
 end
 
 function inputHandler:update()
-	for k,inp in ipairs(self.inputList) do
+	for k,inp in invertIpairs(self.inputList) do
 		assert(inp.timer >= 0,"inp.timer is: "..inp.timer)
 		inp.timer = inp.timer -1
 		if inp.timer <= 0 then table.remove(self.inputList,k) end
@@ -111,7 +111,10 @@ end
 function inputHandler:isTapped(input,patterns)
 	local index
 	for k,v in invertIpairs(self.inputList) do
-		if v.value == input then index = k end
+		if v.value == input then 
+			index = k 
+			break
+		end
 	end
 	local result = self.inputList[index]
 	return result and result.timer == INPUT_PERSISTENCE
@@ -127,11 +130,15 @@ end
 --period: The period of times all taps must have occured in
 --The first input found is also required to be 'frame-fresh'
 function inputHandler:multiTap(input,amount,period)
-	local amountFound = 0
+	assert (period <= INPUT_PERSISTENCE,"period exceeds input persistence.\n Period: "..period.." Persistence: "..INPUT_PERSISTENCE)
 	for k,v in invertIpairs(self.inputList) do
-		if v.value == input and (amountFound == 0 and v.timer >= INPUT_PERSISTENCE) or (amountFound >= 1 and v.timer >= (INPUT_PERSISTENCE-period)) then
-			amountFound = amountFound + 1
-			if amountFound >= amount then return true end
+		if v.value == input and v.timer >= INPUT_PERSISTENCE then
+			for i = k,k-(amount-1),-1 do
+				if(not (self.inputList[i] and self.inputList[i].value == input and self.inputList[i].timer >= INPUT_PERSISTENCE - period)) then
+					return false
+				end
+			end		
+			return true
 		end
 	end
 	return false
@@ -164,7 +171,7 @@ function love.joystickhat(joystick, hat,direction)
 	for k,v in ipairs(inputHandlers) do
 		if(v.device == joystick) then 
 			if v.mapping[direction] then table.insert(v.inputList,inputHandler.input(v.mapping[direction])) end
-			if v.mapping[v.lastHat] then v.held[v.mapping[v.lastHat]] = false end
+			if v.mapping[v.lastHat] then v.held[v.lastHat] = false end
 			v.lastHat = v.mapping[direction] -- we need to remember the last position of the hat so we can reset the held status
 			if v.mapping[direction] then v.held[v.mapping[direction]] = true end
 		end
