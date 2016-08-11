@@ -1,32 +1,30 @@
 local attack = require "attack"
+local state = require "state"
 
 local standing = {}
 setmetatable(standing,standing)
 
 function standing:__index(key)
-	return rawget(standing,key)
+	result = rawget(standing,key) or rawget(state,key)
+	return result
 end
 
-function standing:__call(character1, character2)--character one is assumed to be the character owning this state
-	nt = {["c1"] = character1, ["c2"] = character2, inputs = {["p,r,rd,d,r,rd,d"] = function () self.word = "Shunkuu HADOUUUKEN!" end,["p,r,rd,d"] = function () self.word = "HADOUKEN" end, ["p,rd,d,r"] = function () self.word = "SHORYUKEN!" end}}
+function standing:__call(character1, character2,buttons,combinations,fpcombinations,patternStates)--character one is assumed to be the character owning this state
+	nt = {["c1"] = character1, ["c2"] = character2,buttons = buttons, combinations = combinations,fpcombinations = fpcombinations, patternStates = patternStates, patterns = {}}
+	for k in pairs(nt.patternStates) do
+		table.insert(nt.patterns,k)
+	end
 	setmetatable(nt,standing)
 	return nt
 end
 
 function standing:handleInput(inputs)
-	local yay = self.inputs[self.c1.handler:patternRecognition({"p,r,rd,d,r,rd,d","p,r,rd,d","p,rd,d,r"})]
-	if yay then yay(self) end
-	if self.c1.handler:multiTap('r',2,10) then
-		self.c1:move(500*1/60*10,0,self.c2)
-	end
-	if self.c1.handler:isTapped('MP') then 
-		self.c1.state = attack(self.c1,self.c2,5,3,10,{rect(162+self.c1.x,90+self.c1.y,110,57)}) 			
-		return 
-	end
-	if self.c1.handler:isHeld('l') then 
-		self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement
-	elseif self.c1.handler:isHeld('r') then 
-		self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
+	if not self:checkInputs() then 
+		if self.c1.handler:isHeld('l') then 
+			self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement
+		elseif self.c1.handler:isHeld('r') then 
+			self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
+		end
 	end
 end
 

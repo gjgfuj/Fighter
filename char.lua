@@ -6,10 +6,17 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny,handler)
-	c = {["x"] = nx,["y"] = ny,["hurtboxes"] = {},["collisionboxes"] = {}, ["lookingRight"]=true, ["width"] = 0, handler = handler, word = "none"}
+	c = {["x"] = nx,["y"] = ny,["collisionboxes"] = {},["hurtboxes"] = {}, ["lookingRight"]=true, ["width"] = 0, handler = handler, word = "none"}
 	setmetatable(c,char)
 	return c
 end
+
+function char:setStanding(newStanding)
+	print(newStanding)
+	self.standing = newStanding
+	self.state = self.standing:copy()
+end
+
 function char:addHurtbox(hx,hy,width,height)
 	table.insert(self.hurtboxes,char.hurtbox(self.x+hx,self.y+hy,width,height)) -- place the hurtboxes in the relative grid
 	-- This makes initializing hurtboxes consistent regardless of character position

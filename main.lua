@@ -2,9 +2,8 @@ local rect = require "rect"
 local char = require "char"
 local standing = require "standing"
 local inputHandler = require "inputHandler"
-	
-local c1
-local c2
+fireball = require "fireball"
+local attack = require "attack"
 
 function love.run()
  
@@ -63,6 +62,8 @@ function love.load()
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	
+	entities = {}
+	
 	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
 	local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
 	
@@ -101,8 +102,14 @@ function love.load()
 	c2:addCollisionbox(14,90,157,315)
 	c2:addCollisionbox(60,2,80,88)
 	
-	c1.state = standing(c1,c2)
-	c2.state = standing(c2,c1)
+	local forwardMedium = attack(c1,c2,10,5,20,{{162,90,110,57}})--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
+	forwardMedium.inStartup = function (self) self.c1:move(20,0,self.c2) if self.hitboxes then self.hitboxes[1]:setX(self.hitboxes[1].x+20) end end
+	forwardMedium.inRecovery = function (self) self.c1:move(-10,0,self.c2) if self.hitboxes then self.hitboxes[1]:setX(self.hitboxes[1].x-10)end end
+	local fireballAttack = attack(c1,c2,15,1,0,{})
+	fireballAttack.beforeCollisionCheck = function(self) print("FIREBALL!") table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,750)) end
+	local standingState = standing(c1,c2,{['MP'] = attack(c1,c2,5,3,10,{{162,90,110,57}})},{['MP,r'] = forwardMedium},{},{["MP,r,rd,d"] = fireballAttack})
+	c1:setStanding(standingState)
+	c2:setStanding(standing(c2,c1,{},{},{},{}))
 	love.graphics.setBackgroundColor(0,53,255)
 end
 
@@ -113,6 +120,9 @@ function love.draw()
 	love.graphics.print("FPS:"..love.timer.getFPS(),0,0)
 	c1:draw(500,"c1")
 	c2:draw(1000,"c2")
+	for k,v in ipairs(entities) do
+		v:draw()
+	end
 end
 
 
@@ -120,7 +130,11 @@ function love.update(dt)
 	c1:handleInput(inputs)	
 	c1:update()
 	c2:update()
-		
+	
+	for k,v in ipairs(entities) do
+		if v.update then v:update() end
+	end
+	
 	if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(226) -- make characters always face each other
 	elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(226) end
 		

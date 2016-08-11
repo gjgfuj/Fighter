@@ -14,7 +14,7 @@ local function invertIpairs(array)
 	end
 end
 
-local function splitString(str,seperator)-- takes a string and returns a table of parts
+function splitString(str,seperator)-- takes a string and returns a table of parts
 	local result = {}
 	for part in string.gmatch(str, "([^"..seperator.."]+)") do
 		table.insert(result,part)
@@ -108,18 +108,37 @@ function inputHandler:update()
 	end
 end
 
-function inputHandler:isTapped(input,patterns)
-	local index
-	for k,v in invertIpairs(self.inputList) do
-		if v.value == input then 
-			index = k 
-			break
+function inputHandler:isTapped(...)
+	--local index
+	--for k,v in invertIpairs(self.inputList) do
+		--if v.value == input then 
+			--index = k 
+			--break
+		--end
+	--end
+	--local result = self.inputList[index]
+	--return result and result.timer == INPUT_PERSISTENCE
+	found = true
+	for k,input in ipairs({...}) do
+		local foundHere = false
+		for k,v in invertIpairs(self.inputList) do
+			if v.value == input and v.timer == INPUT_PERSISTENCE then 
+				foundHere = true
+				break
+			end
 		end
+		found = found and foundHere
 	end
-	local result = self.inputList[index]
-	return result and result.timer == INPUT_PERSISTENCE
+	return found
 end
 
+function inputHandler:buttonCombination(framePerfect,...)
+	local allHeld = true
+	for k,input in ipairs({...}) do
+		allHeld = allHeld and self.held[input]
+	end
+	return allHeld and self:isTapped(framePerfect)
+end
 
 function inputHandler:isHeld(input)
 	return self.held[input]
