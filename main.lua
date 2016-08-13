@@ -58,14 +58,16 @@ function love.run()
 end
 
 function love.load()
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = false})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	
 	entities = {}
 	
-	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
-	local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
+	--local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
+	local mapping = {a = 'l' ,d = 'r',w = 'u',s = 'd', f = 'LP', g = 'MP',h= 'HP', c = 'LK', v = 'MK', b = 'HK'}
+	--local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
+	local handler = inputHandler("keyboard",mapping)
 	
 	
 	c1 = char(537,600,handler)
@@ -125,8 +127,8 @@ function love.draw()
 	end
 end
 
-
 function love.update(dt)
+	print("NEWFRAME")
 	c1:handleInput(inputs)	
 	c1:update()
 	c2:update()
@@ -147,8 +149,4 @@ function love.update(dt)
 		c2.state = c2.nextState
 		c2.nextState = nil
 	end
-end
-
-function love.keypressed(key)
-	if(key=="rctrl") then debug.debug() end
 end

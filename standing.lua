@@ -4,17 +4,14 @@ local state = require "state"
 local standing = {}
 setmetatable(standing,standing)
 
-function standing:__index(key)
-	result = rawget(standing,key) or rawget(state,key)
-	return result
-end
+standing.__index = state
 
 function standing:__call(character1, character2,buttons,combinations,fpcombinations,patternStates)--character one is assumed to be the character owning this state
 	nt = {["c1"] = character1, ["c2"] = character2,buttons = buttons, combinations = combinations,fpcombinations = fpcombinations, patternStates = patternStates, patterns = {}}
 	for k in pairs(nt.patternStates) do
 		table.insert(nt.patterns,k)
 	end
-	setmetatable(nt,standing)
+	setmetatable(nt,{__index = standing})
 	return nt
 end
 

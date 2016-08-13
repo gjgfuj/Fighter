@@ -20,7 +20,11 @@ function fireball:update()
 		for k,v in ipairs(self.target.hurtboxes) do
 			if self.hitb and self.hitb:collide(v) then
 				self.target:move(200,0,c1)
-				self.hitb = nil
+				for k,v in ipairs(entities) do
+					if v == self then
+						table.remove(entities,k)
+					end
+				end
 			end
 		end
 	end

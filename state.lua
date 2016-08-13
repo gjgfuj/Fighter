@@ -35,7 +35,6 @@ function state:checkInputs()
 end
 
 function state:copy()
-	print("SUPER")
 	local nt = {}
 	for k,v in pairs(self) do
 		nt[k] = v

@@ -3,7 +3,7 @@ local inputHandler = {}
 local inputHandlers = {} --a complete list of active inputHandlers
 setmetatable(inputHandler,inputHandler)
 
-local INPUT_PERSISTENCE = 30 -- constant indicating how many frames an input is remembered for input reading
+local INPUT_PERSISTENCE = 120 -- constant indicating how many frames an input is remembered for input reading
 
 local function invertIpairs(array)
 	local i = #array
@@ -23,6 +23,7 @@ function splitString(str,seperator)-- takes a string and returns a table of part
 end
 
 local function compare(inp1,inp2)--takes care of symbols with multiple meanings
+	print(inp1,inp2)
 	if inp1 == 'p' then 
 		return inp2 ==  "LP" or inp2 == "MP" or inp2 == "HP"
 	elseif inp1 == 'k' then 
@@ -141,7 +142,13 @@ function inputHandler:buttonCombination(framePerfect,...)
 end
 
 function inputHandler:isHeld(input)
-	return self.held[input]
+	if input == 'r' then 
+		return self.held['r'] and not self.held['l']
+	elseif input == 'l' then
+		return self.held['l'] and not self.held['r']
+	else
+		return self.held[input]
+	end
 end
 
 ---input: the input to check
@@ -193,6 +200,81 @@ function love.joystickhat(joystick, hat,direction)
 			if v.mapping[v.lastHat] then v.held[v.lastHat] = false end
 			v.lastHat = v.mapping[direction] -- we need to remember the last position of the hat so we can reset the held status
 			if v.mapping[direction] then v.held[v.mapping[direction]] = true end
+		end
+	end
+end
+
+function love.keypressed(key)
+	for k,v in ipairs(inputHandlers) do
+		if v.device == "keyboard" then
+			inp = v.mapping[key]
+			if inp and (inp=='r' and v:isHeld('u') or inp == 'u' and v:isHeld('r')) then
+				table.insert(v.inputList,inputHandler.input('ru'))
+				v.held['ru'] = true
+				v.held['u'] = false
+				v.held['r'] = false
+			elseif inp and (inp == 'r' and v:isHeld('d') or inp == 'd' and v:isHeld('r')) then
+				table.insert(v.inputList,inputHandler.input('rd'))
+				v.held['rd'] = true
+				v.held['d'] = false
+				v.held['r'] = false
+			elseif inp and (inp == 'l' and v:isHeld('u') or inp == 'u' and v:isHeld('l')) then
+				table.insert(v.inputList,inputHandler.input('lu'))
+				v.held['lu'] = true
+				v.held['l'] = false
+				v.held['u'] = false
+			elseif inp and (inp == 'l' and v:isHeld('d') or inp == 'd' and v:isHeld('l')) then
+				table.insert(v.inputList,inputHandler.input('ld'))
+				v.held['ld'] = true
+				v.held['l'] = false
+				v.held['d'] = false
+			elseif inp then
+				table.insert(v.inputList,inputHandler.input(inp))
+				v.held[inp] = true
+			end
+		end
+	end
+end
+
+function love.keyreleased(key)
+	for k,v in ipairs(inputHandlers) do
+		if v.device == "keyboard" then 
+			inp = v.mapping[key]
+			if inp and (inp == 'r' and v.held['ru']) then
+				v.held['ru'] = false
+				v.held['u'] = true
+				table.insert(v.inputList,inputHandler.input('u'))
+			elseif inp and (inp == 'r' and v.held['rd']) then 
+				v.held['rd'] = false
+				v.held['d'] = true
+				table.insert(v.inputList,inputHandler.input('d'))
+			elseif inp and (inp == 'l' and v.held['lu']) then 
+				v.held['lu'] = false
+				v.held['u'] = true
+				table.insert(v.inputList,inputHandler.input('u'))
+			elseif inp and (inp == 'l' and v.held['ld']) then 
+				v.held['ld'] = false
+				v.held['d'] = true
+				table.insert(v.inputList,inputHandler.input('d'))
+			elseif inp and (inp == 'u' and v.held['ru']) then 
+				v.held['ru'] = false
+				v.held['r'] = true
+				table.insert(v.inputList,inputHandler.input('r'))
+			elseif inp and (inp == 'u' and v.held['lu']) then 
+				v.held['lu'] = false
+				v.held['l'] = true
+				table.insert(v.inputList,inputHandler.input('l'))
+			elseif inp and (inp == 'd' and v.held['rd']) then 
+				v.held['rd'] = false
+				v.held['r'] = true
+				table.insert(v.inputList,inputHandler.input('r'))
+			elseif inp and (inp == 'd' and v.held['ld']) then 
+				v.held['ld'] = false
+				v.held['l'] = true
+				table.insert(v.inputList,inputHandler.input('l'))
+			elseif inp then 
+				v.held[inp] = false
+			end
 		end
 	end
 end
