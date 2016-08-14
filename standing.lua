@@ -7,7 +7,7 @@ setmetatable(standing,standing)
 standing.__index = state
 
 function standing:__call(character1, character2,buttons,combinations,fpcombinations,patternStates)--character one is assumed to be the character owning this state
-	nt = {["c1"] = character1, ["c2"] = character2,buttons = buttons, combinations = combinations,fpcombinations = fpcombinations, patternStates = patternStates, patterns = {}}
+	nt = {["c1"] = character1, ["c2"] = character2,buttons = buttons, combinations = combinations,fpcombinations = fpcombinations, patternStates = patternStates, patterns = {},inputsRight = true}
 	for k in pairs(nt.patternStates) do
 		table.insert(nt.patterns,k)
 	end
@@ -18,8 +18,10 @@ end
 function standing:handleInput(inputs)
 	if not self:checkInputs() then 
 		if self.c1.handler:isHeld('l') then 
+			print("MOVE")
 			self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement
 		elseif self.c1.handler:isHeld('r') then 
+			print("MOVE")
 			self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
 		end
 	end

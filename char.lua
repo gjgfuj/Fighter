@@ -12,14 +12,8 @@ function char:__call(nx,ny,handler)
 end
 
 function char:setStanding(newStanding)
-	print(newStanding)
 	self.standing = newStanding
 	self.state = self.standing:copy()
-end
-
-function char:addHurtbox(hx,hy,width,height)
-	table.insert(self.hurtboxes,char.hurtbox(self.x+hx,self.y+hy,width,height)) -- place the hurtboxes in the relative grid
-	-- This makes initializing hurtboxes consistent regardless of character position
 end
 
 function char:addCollisionbox(hx,hy,width,height)
@@ -32,28 +26,32 @@ local function doMove(self,xVel,yVel)
 	self.x = self.x+xVel
 	self.y = self.y+yVel
 	--move all Hurtboxes
-	for k,v in ipairs(self.hurtboxes) do
+	for k,v in ipairs(self.state.hurtboxes) do
 	v:setX(v.x+xVel)
 	v:setY(v.y+yVel)
 	end
-	for k,v in ipairs(self.collisionboxes) do
+	for k,v in ipairs(self.state.collisionboxes) do
 	v:setX(v.x+xVel)
 	v:setY(v.y+yVel)
 	end
+	if self.state.hitboxes then for k,v in ipairs(self.state.hitboxes) do
+	v:setX(v.x+xVel)
+	v:setY(v.y+yVel)
+	end end 
 end
 
 local function checkCollision(self,otherChar,xVel,yVel)
 	if xVel < 0 then -- when moving to the left
-		for k,v in ipairs(self.collisionboxes) do
-			for k2,v2 in ipairs (otherChar.collisionboxes) do
+		for k,v in ipairs(self.state.collisionboxes) do
+			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
 				if(v:collide(v2) and v2.x <= v.x) then 
 					return true
 				end
 			end
 		end
 	elseif xVel > 0 then --when moving to the right
-		for k,v in ipairs(self.collisionboxes) do
-			for k2,v2 in ipairs (otherChar.collisionboxes) do
+		for k,v in ipairs(self.state.collisionboxes) do
+			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
 				if(v:collide(v2) and v2.endx >= v.endx) then 
 					return true
 				end
@@ -72,7 +70,7 @@ function char:move(xVel,yVel,otherChar)
 end
 
 --the two functions below definitely need to be cleaned up
-local function flipBox(box,width,self)-- takes a rect and flips it width refers to the width of the character!
+function flipBox(box,width,self)-- takes a rect and flips it width refers to the width of the character!
 	local nx = box.x-self.x --get the hurtboxe's "local" coordinates
 		nx = nx+box.width --get the upper right corner
 		nx = nx-width  --move the y axis to the middle of the character
@@ -82,21 +80,24 @@ end
 function char:flip(width)--this one's most likely temporary
 	self.lookingRight = not self.lookingRight
 	self.width = width
-	for k,v in ipairs(self.hurtboxes) do 
+	for k,v in ipairs(self.state.hurtboxes) do 
 		flipBox(v,width,self)
 	end
-	for k,v in ipairs(self.collisionboxes) do
+	for k,v in ipairs(self.state.collisionboxes) do
 		flipBox(v,width,self)
 	end
+	if self.state.hitboxes then for k,v in ipairs(self.state.hitboxes) do
+		flipBox(v,width,self)
+	end end
 end
 
 function char:draw(coord,name)
 	love.graphics.setColor(255,255,255) -- set color to white
 	love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
 	if self.state.word then love.graphics.print(self.state.word,self.x,self.y-50) end
-	for k,v in ipairs(self.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
+	for k,v in ipairs(self.state.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
-	for k,v in ipairs(self.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
+	for k,v in ipairs(self.state.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
 	if self.state.draw then self.state:draw() end
 end
 
@@ -121,6 +122,10 @@ function char:isBlocking()
 	return self.state:isBlocking()
 end
 
+function char:setState(toSet)
+	self.lookingRight = true
+	self.state = toSet
+end
 --inner class hurtbox
 local hurtbox = {}
 setmetatable(hurtbox,hurtbox)

@@ -3,7 +3,7 @@ local inputHandler = {}
 local inputHandlers = {} --a complete list of active inputHandlers
 setmetatable(inputHandler,inputHandler)
 
-local INPUT_PERSISTENCE = 120 -- constant indicating how many frames an input is remembered for input reading
+local INPUT_PERSISTENCE = 15 -- constant indicating how many frames an input is remembered for input reading
 
 local function invertIpairs(array)
 	local i = #array
@@ -105,7 +105,7 @@ function inputHandler:update()
 	for k,inp in invertIpairs(self.inputList) do
 		assert(inp.timer >= 0,"inp.timer is: "..inp.timer)
 		inp.timer = inp.timer -1
-		if inp.timer <= 0 then table.remove(self.inputList,k) end
+		if inp.timer <= 0 then table.remove(self.inputList,k) print(self.device) end
 	end
 end
 
@@ -205,6 +205,7 @@ function love.joystickhat(joystick, hat,direction)
 end
 
 function love.keypressed(key)
+	if key == "rctrl" then debug.debug() end
 	for k,v in ipairs(inputHandlers) do
 		if v.device == "keyboard" then
 			inp = v.mapping[key]

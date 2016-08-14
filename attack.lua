@@ -9,7 +9,7 @@ function attack:__index(key)
 end
 
 function attack:__call(ch1,ch2,s,a,r,hitb,effect)
-	nt = {startup = s, active = a, recovery = r, frames_passed = 0}
+	nt = {startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, inputsRight = true}
 	if hitb then nt.hitboxValues = hitb end
 	setmetatable(nt,attack)
 	nt.c1 = ch1
@@ -23,6 +23,7 @@ end
 
 function attack:update()
 	self.frames_passed = self.frames_passed + 1
+	if self.onFrame[self.frames_passed] then self.onFrame[self.frames_passed](self) end
 	if self.frames_passed <= self.startup then if self.inStartup then self:inStartup() end --if you're still in startup frames do nothing
 	elseif self.frames_passed <= self.startup+self.active then -- if you're in active frames then check for collision
 		if self.beforeCollisionCheck then self:beforeCollisionCheck() end
@@ -38,7 +39,7 @@ function attack:update()
 		end
 		if self.afterCollisionCheck then self:afterCollisionCheck() end
 	elseif self.frames_passed <= self.startup+self.active+self.recovery then if self.inRecovery then self:inRecovery() end --in recovery frames just do nothing again
-	else self.c1.state = self.c1.standing:copy() end
+	else self.c1:setState(self.c1.standing:copy()) end
 end
 
 function attack:resolveHit()
