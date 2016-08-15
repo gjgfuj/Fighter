@@ -2,7 +2,7 @@ local state = require "state"
 
 local attack = {}
 setmetatable(attack,attack)
-
+--
 function attack:__index(key)
 	result = rawget(attack,key) or rawget(state,key)
 	return result
@@ -15,10 +15,6 @@ function attack:__call(ch1,ch2,s,a,r,hitb,effect)
 	nt.c1 = ch1
 	nt.c2 = ch2
 	return nt 
-end
-
-function attack:handleInput(...)
-	if onInput then onInput(...) end
 end
 
 function attack:update()

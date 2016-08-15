@@ -4,6 +4,7 @@ local standing = require "standing"
 local inputHandler = require "inputHandler"
 local fireball = require "fireball"
 local attack = require "attack"
+local crouching = require "crouching"
 
 local c1
 local c2
@@ -131,7 +132,22 @@ local function makeTestChar(toMake,opponent)
 	standingState:addHurtbox(180,22,44,37)
 	standingState:addCollisionbox(14,90,157,315)
 	standingState:addCollisionbox(60,2,80,88)
-	toMake:setStanding(standingState)
+	toMake:setstanding(standingState)
+	
+	crouchingMP = attack(toMake,opponent,5,3,10,{{181,240,127,57}})
+	crouchingMP:addHurtbox(65,148,80,88)
+	crouchingMP:addHurtbox(0,301,194,104)
+	crouchingMP:addHurtbox(0,236,180,64)
+	crouchingMP:addCollisionbox(65,148,80,88)
+	crouchingMP:addCollisionbox(0,236,194,169)
+	
+	local crouchingState = crouching(toMake,opponent,{MP = crouchingMP},{},{},{})
+	crouchingState:addHurtbox(65,148,80,88)
+	crouchingState:addHurtbox(0,301,194,104)
+	crouchingState:addHurtbox(0,236,180,64)
+	crouchingState:addCollisionbox(65,148,80,88)
+	crouchingState:addCollisionbox(0,236,194,169)
+	toMake:setCrouching(crouchingState)
 end
 
 function love.load()
@@ -169,8 +185,6 @@ function love.draw()
 end
 
 function love.update(dt)
-	c1:handleInput(inputs)	
-	c2:handleInput(inputs)
 	c1:update()
 	c2:update()
 	

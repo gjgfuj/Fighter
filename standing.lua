@@ -15,7 +15,7 @@ function standing:__call(character1, character2,buttons,combinations,fpcombinati
 	return nt
 end
 
-function standing:handleInput(inputs)
+function standing:update()
 	if not self:checkInputs() then 
 		if self.c1.handler:isHeld('l') then 
 			print("MOVE")
@@ -23,12 +23,10 @@ function standing:handleInput(inputs)
 		elseif self.c1.handler:isHeld('r') then 
 			print("MOVE")
 			self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
+		elseif self.c1.handler:isHeld('d') or self.c1.handler:isHeld('ld') or self.c1.handler:isHeld('rd') then
+			self.c1:setState(self.c1.crouching:copy())
 		end
 	end
-end
-
-function standing:update()
-	--probably where the standing/walking animation would be played
 end
 
 

@@ -11,9 +11,13 @@ function char:__call(nx,ny,handler)
 	return c
 end
 
-function char:setStanding(newStanding)
-	self.standing = newStanding
+function char:setstanding(newstanding)
+	self.standing = newstanding
 	self.state = self.standing:copy()
+end
+
+function char:setCrouching(newCrouching)
+	self.crouching = newCrouching
 end
 
 function char:addCollisionbox(hx,hy,width,height)
@@ -125,6 +129,7 @@ end
 function char:setState(toSet)
 	self.lookingRight = true
 	self.state = toSet
+	self.state:update()
 end
 --inner class hurtbox
 local hurtbox = {}
