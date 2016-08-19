@@ -23,7 +23,6 @@ function splitString(str,seperator)-- takes a string and returns a table of part
 end
 
 local function compare(inp1,inp2)--takes care of symbols with multiple meanings
-	print(inp1,inp2)
 	if inp1 == 'p' then 
 		return inp2 ==  "LP" or inp2 == "MP" or inp2 == "HP"
 	elseif inp1 == 'k' then 
@@ -105,7 +104,7 @@ function inputHandler:update()
 	for k,inp in invertIpairs(self.inputList) do
 		assert(inp.timer >= 0,"inp.timer is: "..inp.timer)
 		inp.timer = inp.timer -1
-		if inp.timer <= 0 then table.remove(self.inputList,k) print(self.device) end
+		if inp.timer <= 0 then table.remove(self.inputList,k) end
 	end
 end
 

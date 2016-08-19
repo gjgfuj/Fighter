@@ -20,6 +20,10 @@ function char:setCrouching(newCrouching)
 	self.crouching = newCrouching
 end
 
+function char:setJumping(newJumping)
+	self.jumping = newJumping
+end
+
 function char:addCollisionbox(hx,hy,width,height)
 	table.insert(self.collisionboxes,rect(self.x+hx,self.y+hy,width,height)) -- place the hurtboxes in the relative grid
 	-- Probably refactor since these two functions are same
@@ -131,6 +135,11 @@ function char:setState(toSet)
 	self.state = toSet
 	self.state:update()
 end
+
+function char:getBottom()--returns the lowest coordinate of the character's collisionboxes
+	return self.state:getBottom()
+end
+
 --inner class hurtbox
 local hurtbox = {}
 setmetatable(hurtbox,hurtbox)

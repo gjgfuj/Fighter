@@ -8,7 +8,7 @@ end
 
 --TODO: optimize by caching splitString results somewhere,maybe on construction
 function state:checkInputs()
-	if self.__base.inputsRight ~= self.c1.lookingRight then print "TURNING" self:turnInputs() end
+	if self.__base.inputsRight ~= self.c1.lookingRight then self:turnInputs() end
 	pattern = self.c1.handler:patternRecognition(self.patterns)
 	if pattern then
 		self.c1:setState(self.patternStates[pattern]:copy())
@@ -82,7 +82,6 @@ local function turnInput(input)
 end
 
 local function turnInputsIn(tableToTurn)
-	print(#tableToTurn)
 	for k,v in pairs(tableToTurn) do
 		local turnedInput = turnInput(k)
 		tableToTurn[k] = nil
@@ -98,9 +97,18 @@ function state:turnInputs()
 		self.patternStates[turnedInput] = buffer
 		self.patterns[k] = turnedInput
 	end
-	print(self.combinations)
 	turnInputsIn(self.combinations)
 	self.__base.inputsRight = not self.__base.inputsRight
+end
+
+function state:getBottom()
+	local maximum
+	for k,v in ipairs(self.collisionboxes) do
+		if not maximum or v.y + v.height > maximum then
+			maximum = v.y + v.height
+		end
+	end
+	return maximum
 end
 
 return state

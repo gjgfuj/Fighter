@@ -5,6 +5,7 @@ local inputHandler = require "inputHandler"
 local fireball = require "fireball"
 local attack = require "attack"
 local crouching = require "crouching"
+local jumping = require "jumping"
 
 local c1
 local c2
@@ -66,7 +67,7 @@ local function makeTestChar(toMake,opponent)
 	forwardMedium.inStartup = function (self) local vel = 20 if not self.c1.lookingRight then vel = -vel end   self.c1:move(vel,0,self.c2) end
 	forwardMedium.inRecovery = function (self) local vel = -10 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
-	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end print(vel) table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
+	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
 	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}})
 	
 	mediumPunch.onFrame[9] = function (self) 
@@ -148,10 +149,27 @@ local function makeTestChar(toMake,opponent)
 	crouchingState:addCollisionbox(65,148,80,88)
 	crouchingState:addCollisionbox(0,236,194,169)
 	toMake:setCrouching(crouchingState)
+
+	local jumpingState = jumping(toMake,opponent,-1750,{},{},{},{})
+	jumpingState:addHurtbox(60,2,80,88)
+	jumpingState:addHurtbox(14,91,147,65)
+	jumpingState:addHurtbox(6,157,165,75)
+	jumpingState:addHurtbox(0,233,170,44)
+	jumpingState:addHurtbox(4,277,181,24)
+	jumpingState:addHurtbox(5,302,185,24)
+	jumpingState:addHurtbox(35,327,160,35)
+	jumpingState:addHurtbox(40,363,150,8)
+	jumpingState:addHurtbox(25,372,175,33)
+	jumpingState:addHurtbox(162,90,53,57)
+	jumpingState:addHurtbox(175,60,39,29)
+	jumpingState:addHurtbox(180,22,44,37)
+	jumpingState:addCollisionbox(14,90,157,315)
+	jumpingState:addCollisionbox(60,2,80,88)
+	toMake:setJumping(jumpingState)
 end
 
 function love.load()
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
+	love.window.setMode(1920,1080,{["fullscreen"] = false,["fullscreentype"]= "desktop", ["vsync"] = true})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	

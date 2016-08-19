@@ -18,13 +18,13 @@ end
 function standing:update()
 	if not self:checkInputs() then 
 		if self.c1.handler:isHeld('l') then 
-			print("MOVE")
 			self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement
 		elseif self.c1.handler:isHeld('r') then 
-			print("MOVE")
 			self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
 		elseif self.c1.handler:isHeld('d') or self.c1.handler:isHeld('ld') or self.c1.handler:isHeld('rd') then
 			self.c1:setState(self.c1.crouching:copy())
+		elseif self.c1.handler:isHeld('u') then
+			self.c1:setState(self.c1.jumping:copy())
 		end
 	end
 end
