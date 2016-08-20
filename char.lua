@@ -52,7 +52,7 @@ local function checkCollision(self,otherChar,xVel,yVel)
 	if xVel < 0 then -- when moving to the left
 		for k,v in ipairs(self.state.collisionboxes) do
 			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
-				if(v:collide(v2) and v2.x <= v.x) then 
+				if(v:collide(v2) and v2.x <= v.x) then
 					return true
 				end
 			end
@@ -68,12 +68,12 @@ local function checkCollision(self,otherChar,xVel,yVel)
 	end
 end
 
-function char:move(xVel,yVel,otherChar)
-	if(not checkCollision(self,otherChar,xVel,yVel)) then
+function char:move(xVel,yVel,otherChar,ignoreCollision)
+	if(ignoreCollision or not checkCollision(self,otherChar,xVel,yVel)) then
 			doMove(self,xVel,yVel)
 	else
 		doMove(self,xVel/2,yVel)
-		otherChar:move(xVel/2,yVel,self)
+		otherChar:move(xVel/2,0,self)
 	end		
 end
 
@@ -102,6 +102,9 @@ end
 function char:draw(coord,name)
 	love.graphics.setColor(255,255,255) -- set color to white
 	love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
+	[[if(self.image) then 
+		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
+		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end]]	
 	if self.state.word then love.graphics.print(self.state.word,self.x,self.y-50) end
 	for k,v in ipairs(self.state.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
@@ -116,9 +119,7 @@ end
 function char:update()
 	self.state:update()
 	self.handler:update()
-	if(self.image) then 
-		if(self.lookingRight) then love.graphics.draw(self.image,self.x,self.y) --draw the sprite if available
-		else love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.width,0) end end	
+	
 	love.graphics.setColor(0,255,0)
 end
 
@@ -134,6 +135,14 @@ function char:setState(toSet)
 	self.lookingRight = true
 	self.state = toSet
 	self.state:update()
+end
+
+function char:setJumpForward(newJf)
+	self.jumpForward = newJf
+end
+
+function char:setJumpBack(newJb)
+	self.jumpBack = newJb
 end
 
 function char:getBottom()--returns the lowest coordinate of the character's collisionboxes

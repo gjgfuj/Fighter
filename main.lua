@@ -6,9 +6,12 @@ local fireball = require "fireball"
 local attack = require "attack"
 local crouching = require "crouching"
 local jumping = require "jumping"
+require "utility"
 
 local c1
 local c2
+
+local image
 
 function love.run()
  
@@ -63,6 +66,7 @@ function love.run()
 end
 
 local function makeTestChar(toMake,opponent)
+	toMake.image = image
 	local forwardMedium = attack(toMake,opponent,10,5,20,{{162,90,127,57}})--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
 	forwardMedium.inStartup = function (self) local vel = 20 if not self.c1.lookingRight then vel = -vel end   self.c1:move(vel,0,self.c2) end
 	forwardMedium.inRecovery = function (self) local vel = -10 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
@@ -150,7 +154,7 @@ local function makeTestChar(toMake,opponent)
 	crouchingState:addCollisionbox(0,236,194,169)
 	toMake:setCrouching(crouchingState)
 
-	local jumpingState = jumping(toMake,opponent,-1750,{},{},{},{})
+	local jumpingState = jumping(toMake,opponent,0,-1750,{},{},{},{})
 	jumpingState:addHurtbox(60,2,80,88)
 	jumpingState:addHurtbox(14,91,147,65)
 	jumpingState:addHurtbox(6,157,165,75)
@@ -166,9 +170,26 @@ local function makeTestChar(toMake,opponent)
 	jumpingState:addCollisionbox(14,90,157,315)
 	jumpingState:addCollisionbox(60,2,80,88)
 	toMake:setJumping(jumpingState)
+	
+	local jumpingForward = jumping(toMake,opponent,750,-1750,{},{},{},{})
+	jumpingForward:addHurtbox(65,148,80,88)
+	jumpingForward:addHurtbox(0,301,194,104)
+	jumpingForward:addHurtbox(0,236,180,64)
+	jumpingForward:addCollisionbox(65,148,80,88)
+	jumpingForward:addCollisionbox(0,236,194,169)
+	toMake:setJumpForward(jumpingForward)
+	
+	local jumpingBack = jumping(toMake,opponent,-750,-1750,{},{},{},{})
+	jumpingBack:addHurtbox(65,148,80,88)
+	jumpingBack:addHurtbox(0,301,194,104)
+	jumpingBack:addHurtbox(0,236,180,64)
+	jumpingBack:addCollisionbox(65,148,80,88)
+	jumpingBack:addCollisionbox(0,236,194,169)
+	toMake:setJumpBack(jumpingBack)
 end
 
 function love.load()
+	image = love.graphics.newImage("Images/Brett.png")
 	love.window.setMode(1920,1080,{["fullscreen"] = false,["fullscreentype"]= "desktop", ["vsync"] = true})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500

@@ -7,8 +7,8 @@ setmetatable(jumping,jumping)
 
 jumping.__index = airborne
 
-function jumping:__call(c1,c2,vel,buttons,combinations,fpcombinations,patternStates)
-	local nt = {c1 = c1,c2 = c2,yVel = vel,buttons = buttons,combinations = combinations,fpcombinations = fpcombinations,patternStates = patternStates}
+function jumping:__call(c1,c2,xVel,yVel,buttons,combinations,fpcombinations,patternStates)
+	local nt = {c1 = c1,c2 = c2,xVel = xVel, yVel = yVel,buttons = buttons,combinations = combinations,fpcombinations = fpcombinations,patternStates = patternStates}
 	nt.patterns = {}
 	nt.hurtboxes = {}
 	nt.collisionboxes = {}
@@ -20,7 +20,7 @@ function jumping:__call(c1,c2,vel,buttons,combinations,fpcombinations,patternSta
 end
 
 function jumping:update()
-	state.checkInputs(self)
+	self:checkInputs()
 	airborne.update(self)
 end
 

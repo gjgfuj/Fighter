@@ -25,6 +25,10 @@ function standing:update()
 			self.c1:setState(self.c1.crouching:copy())
 		elseif self.c1.handler:isHeld('u') then
 			self.c1:setState(self.c1.jumping:copy())
+		elseif self.c1.handler:isHeld('ru') then
+			self.c1:setState(self.c1.jumpForward:copy())
+		elseif self.c1.handler:isHeld('lu') then 
+			self.c1:setState(self.c1.jumpBack:copy())
 		end
 	end
 end

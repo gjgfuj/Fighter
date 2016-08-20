@@ -24,8 +24,4 @@ function crouching:update()
 	end
 end
 
-function crouching:handleInput()
-	
-end
-
 return crouching
