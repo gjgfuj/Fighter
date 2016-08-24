@@ -6,10 +6,7 @@ local fireball = require "fireball"
 local attack = require "attack"
 local crouching = require "crouching"
 local jumping = require "jumping"
-require "utility"
-
-local c1
-local c2
+local sliding = require "sliding"
 
 local image
 
@@ -121,8 +118,23 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack:addCollisionbox(14,90,157,315)
 	fireballAttack:addCollisionbox(60,2,80,88)
 	
+	local slide = sliding(toMake,opponent,50,{},{},{},{})
+	slide:addHurtbox(60,2,80,88)
+	slide:addHurtbox(14,91,147,65)
+	slide:addHurtbox(6,157,165,75)
+	slide:addHurtbox(0,233,170,44)
+	slide:addHurtbox(4,277,181,24)
+	slide:addHurtbox(5,302,185,24)
+	slide:addHurtbox(35,327,160,35)
+	slide:addHurtbox(40,363,150,8)
+	slide:addHurtbox(25,372,175,33)
+	slide:addHurtbox(162,90,53,57)
+	slide:addHurtbox(175,60,39,29)
+	slide:addHurtbox(180,22,44,37)
+	slide:addCollisionbox(14,90,157,315)
+	slide:addCollisionbox(60,2,80,88)
 	
-	local standingState = standing(toMake,opponent,{['MP'] = mediumPunch},{['MP,r'] = forwardMedium},{},{["MP,r,rd,d"] = fireballAttack})
+	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch},{['MP,r'] = forwardMedium},{},{["MP,r,rd,d"] = fireballAttack})
 	standingState:addHurtbox(60,2,80,88)
 	standingState:addHurtbox(14,91,147,65)
 	standingState:addHurtbox(6,157,165,75)

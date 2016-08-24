@@ -1,4 +1,5 @@
 local rect = require "rect"
+local sliding = require "sliding"
 
 local fireball = {}
 
@@ -19,10 +20,11 @@ function fireball:update()
 		self.hitb:setX(self.hitb.x + self.vel/60)
 		for k,v in ipairs(self.target.state.hurtboxes) do
 			if self.hitb and self.hitb:collide(v) then
-				self.target:move(200*(self.vel/math.abs(self.vel)),0,self.c1)
+				print("Yis")
 				for k,v in ipairs(entities) do
-					if v == self then
+					if v == self then 
 						table.remove(entities,k)
+						return
 					end
 				end
 			end

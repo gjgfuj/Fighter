@@ -1,4 +1,5 @@
 local state = require "state"
+local sliding = require "sliding"
 
 local attack = {}
 setmetatable(attack,attack)
@@ -9,11 +10,12 @@ function attack:__index(key)
 end
 
 function attack:__call(ch1,ch2,s,a,r,hitb,effect)
-	nt = {startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, inputsRight = true}
+	nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, inputsRight = true}
 	if hitb then nt.hitboxValues = hitb end
+	nt.slide = sliding(nt.c2,nt.c1,30,{},{},{},{})
+	nt.slide:addCollisionbox(0,0,226,800)
+	nt.slide:addHurtbox(0,0,226,800)
 	setmetatable(nt,attack)
-	nt.c1 = ch1
-	nt.c2 = ch2
 	return nt 
 end
 
@@ -25,7 +27,7 @@ function attack:update()
 		if self.beforeCollisionCheck then self:beforeCollisionCheck() end
 		if self.hitboxes then 
 			for k1,v1 in ipairs(self.hitboxes) do
-				for k2,v2 in ipairs(self.c2.hurtboxes) do
+				for k2,v2 in ipairs(self.c2.state.hurtboxes) do
 					if(v1:collide(v2)) then 
 						self:resolveHit()
 						self.hitboxes = nil -- when a hit occurs despawn the hitboxes
@@ -39,13 +41,7 @@ function attack:update()
 end
 
 function attack:resolveHit()
-	if self.c2:isBlocking() then
-		if self.blockEffect then self.c2:queueState(self.blockEffect) end
-		print("A hit has been blocked")
-	else 
-		if self.hitEffect then self.c2:queueState(self.hitEffect) end
-		print("A hit has occurred") --for now
-	end
+		self.c2:queueState(self.slide:copy())
 end
 
 function attack:draw()
