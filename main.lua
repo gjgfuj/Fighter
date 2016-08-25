@@ -57,7 +57,7 @@ function love.run()
 		local end_time = love.timer.getTime()
 		local frame_time = end_time - start_time
 		
-		if love.timer then love.timer.sleep(1/60-frame_time) end
+		--if love.timer then love.timer.sleep(1/60-frame_time) end
 	end
  
 end

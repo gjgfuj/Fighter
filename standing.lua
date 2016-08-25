@@ -7,10 +7,7 @@ setmetatable(standing,standing)
 standing.__index = state
 
 function standing:__call(character1, character2,buttons,combinations,fpcombinations,patternStates)--character one is assumed to be the character owning this state
-	nt = {["c1"] = character1, ["c2"] = character2,buttons = buttons, combinations = combinations,fpcombinations = fpcombinations, patternStates = patternStates, patterns = {},inputsRight = true}
-	for k in pairs(nt.patternStates) do
-		table.insert(nt.patterns,k)
-	end
+	local nt = state(character1, character2,buttons,combinations,fpcombinations,patternStates)
 	setmetatable(nt,{__index = standing})
 	return nt
 end
@@ -33,6 +30,15 @@ function standing:update()
 	end
 end
 
+function standing:handleHit(damage,chip,hitEffect,blockEffect,level)
+	if self.c1.handler:isHeld(self.c1.back) and level ~= 'L' then --if the player is holding back here he is blocking high
+		self.c1:doDamage(chip)
+		self.c1:queueState(blockEffect)
+	else
+		self.c1:doDamage(damage)
+		self.c1:queueState(hitEffect)
+	end
+end
 
 function standing:isBlocking()
 	if self.c1.lookingRight and self.c1.handler:isHeld(l) or not self.c1.lookingRight and self.c1.handler:isHeld('r') then return 'H' end

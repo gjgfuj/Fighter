@@ -5,11 +5,7 @@ local crouching = {}
 setmetatable(crouching,crouching)
 
 function crouching:__call(c1,c2,buttons,combinations,fpcombinations,patternStates)
-	local nt = {c1 = c1,c2 = c2,buttons = buttons, combinations = combinations, fpcombinations = fpcombinations, patternStates = patternStates}
-	nt.patterns = {}
-	for k,v in pairs(nt.patternStates) do
-		table.insert(patterns,k)
-	end
+	local nt = state(c1,c2,buttons,combinations,fpcombinations,patternStates)
 	setmetatable(nt,{__index = crouching})
 	return nt
 end

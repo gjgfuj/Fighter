@@ -10,7 +10,7 @@ function attack:__index(key)
 end
 
 function attack:__call(ch1,ch2,s,a,r,hitb,effect)
-	nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, inputsRight = true}
+	local nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, inputsRight = true}
 	if hitb then nt.hitboxValues = hitb end
 	nt.slide = sliding(nt.c2,nt.c1,30,{},{},{},{})
 	nt.slide:addCollisionbox(0,0,226,800)

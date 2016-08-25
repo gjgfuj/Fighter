@@ -6,7 +6,7 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny,handler)
-	c = {["x"] = nx,["y"] = ny,["collisionboxes"] = {},["hurtboxes"] = {}, ["lookingRight"]=true, ["width"] = 0, handler = handler, word = "none"}
+	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r'}
 	setmetatable(c,char)
 	return c
 end
@@ -53,7 +53,7 @@ local function checkCollision(self,otherChar,xVel,yVel)
 		for k,v in ipairs(self.state.collisionboxes) do
 			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
 				if(v:collide(v2) and v2.x <= v.x) then
-					return true
+					return true,(v.x-v2.endx)+1
 				end
 			end
 		end
@@ -61,7 +61,7 @@ local function checkCollision(self,otherChar,xVel,yVel)
 		for k,v in ipairs(self.state.collisionboxes) do
 			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
 				if(v:collide(v2) and v2.endx >= v.endx) then 
-					return true
+					return true,(v.endx -v2.x)-1
 				end
 			end
 		end
@@ -71,9 +71,14 @@ end
 function char:move(xVel,yVel,otherChar,ignoreCollision)
 	if(ignoreCollision or not checkCollision(self,otherChar,xVel,yVel)) then
 			doMove(self,xVel,yVel)
+			nowCollide,distance = checkCollision(self,otherChar,xVel,yVel)
+			print(nowCollide)
+			if not ignoreCollision and nowCollide then
+				doMove(self,-distance,0)
+			end
 	else
-		doMove(self,xVel/2,yVel)
-		otherChar:move(xVel/2,0,self)
+		doMove(self,xVel/2,yVel,true)
+		otherChar:move(xVel/2,0,self,true)
 	end		
 end
 
@@ -86,7 +91,12 @@ function flipBox(box,width,self)-- takes a rect and flips it width refers to the
 end
 
 function char:flip(width)--this one's most likely temporary
-	self.lookingRight = not self.lookingRight
+	self.lookingRight = not self.lookingRight 
+	if not (self.lookingRight and self.back == l) or not (not self.lookingRight and self.back == r) then
+		local backBuffer = self.back
+		self.back = self.forward
+		self.forward = backBuffer
+	end
 	self.width = width
 	for k,v in ipairs(self.state.hurtboxes) do 
 		flipBox(v,width,self)
@@ -144,6 +154,14 @@ end
 
 function char:getBottom()--returns the lowest coordinate of the character's collisionboxes
 	return self.state:getBottom()
+end
+
+function char:handleHit(damage,chip,hitEffect,blockEffect)
+	self.state:handleHit(damage,chip,hitEffect,blockEffect,level);
+end
+
+function char:doDamage(damage)
+	--TODO
 end
 
 --inner class hurtbox

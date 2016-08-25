@@ -15,7 +15,7 @@ function rect:__basecollide(other)
 	return false
 end
 function rect:__call(x,y,width,height)
-	nt = {x=x,y=y,width=width,height=height,endx=x+width,endy=y+height}
+	local nt = {x=x,y=y,width=width,height=height,endx=x+width,endy=y+height}
 	setmetatable(nt,self)
 	return nt
 end

@@ -6,6 +6,17 @@ function state:__index(key)
 	return rawget(state,key)
 end
 
+function state:__call(c1,c2,buttons,combinations,fpcombinations,patternStates)
+	local nt = {c1=c1, c2=c2, buttons=buttons, combinations=combinations, fpcombinations = fpcombinations, patternStates=patternStates}
+	nt.hurtboxes = {}
+	nt.collisionboxes = {}
+	nt.patterns = {}
+	for k,v in pairs(patternStates) do
+		table.insert(nt.patterns,k)
+	end
+	return nt
+end
+
 --TODO: optimize by caching splitString results somewhere,maybe on construction
 function state:checkInputs()
 	if self.__base.inputsRight ~= self.c1.lookingRight then self:turnInputs() end
@@ -99,6 +110,11 @@ function state:turnInputs()
 	end
 	turnInputsIn(self.combinations)
 	self.__base.inputsRight = not self.__base.inputsRight
+end
+
+function state:handleHit(damage,chip,hitEffect) -- the default implementation assumes that the character wasn't able to block
+	self.c1:doDamage(damage)
+	self.c1:queueState(hitEffect:copy())
 end
 
 function state:getBottom()
