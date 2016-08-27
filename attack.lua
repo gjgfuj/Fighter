@@ -9,8 +9,8 @@ function attack:__index(key)
 	return result
 end
 
-function attack:__call(ch1,ch2,s,a,r,hitb,effect)
-	local nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, inputsRight = true}
+function attack:__call(ch1,ch2,s,a,r,hitb,damage,chip,effect,blockEffect)
+	local nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, damage = damage,chip = chip,effect = effect,blockEffect = blockEffect,inputsRight = true}
 	if hitb then nt.hitboxValues = hitb end
 	nt.slide = sliding(nt.c2,nt.c1,30,{},{},{},{})
 	nt.slide:addCollisionbox(0,0,226,800)
@@ -41,7 +41,8 @@ function attack:update()
 end
 
 function attack:resolveHit()
-		self.c2:queueState(self.slide:copy())
+		self.effect.hurtboxValues,self.effect.collisionboxValues = self.c2:supplyBoxes()
+		self.c2:handleHit(self.damage,self.chip,self.effect,self.blockEffect,self.level)
 end
 
 function attack:draw()

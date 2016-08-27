@@ -33,10 +33,10 @@ end
 function standing:handleHit(damage,chip,hitEffect,blockEffect,level)
 	if self.c1.handler:isHeld(self.c1.back) and level ~= 'L' then --if the player is holding back here he is blocking high
 		self.c1:doDamage(chip)
-		self.c1:queueState(blockEffect)
+		self.c1:queueState(blockEffect:copy())
 	else
 		self.c1:doDamage(damage)
-		self.c1:queueState(hitEffect)
+		self.c1:queueState(hitEffect:copy())
 	end
 end
 

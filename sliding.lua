@@ -23,7 +23,7 @@ function sliding:update()
 		self.xVel = self.xVel -5
 		if self.xVel <= 0 then self.c1:setState(self.c1.standing:copy()) end
 	else
-		self.xVel = xVel + 5
+		self.xVel = self.xVel + 5
 		if self.xVel >= 0 then self.c1:setState(self.c1.standing:copy()) end
 	end
 end

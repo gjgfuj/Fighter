@@ -7,6 +7,10 @@ local attack = require "attack"
 local crouching = require "crouching"
 local jumping = require "jumping"
 local sliding = require "sliding"
+local hitstun = require "hitstun"
+
+local c1
+local c2
 
 local image
 
@@ -57,19 +61,19 @@ function love.run()
 		local end_time = love.timer.getTime()
 		local frame_time = end_time - start_time
 		
-		--if love.timer then love.timer.sleep(1/60-frame_time) end
+		if love.timer then love.timer.sleep(1/60-frame_time) end
 	end
  
 end
 
 local function makeTestChar(toMake,opponent)
 	toMake.image = image
-	local forwardMedium = attack(toMake,opponent,10,5,20,{{162,90,127,57}})--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
+	local forwardMedium = attack(toMake,opponent,10,5,20,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60),hitstun(opponent,toMake,30))--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
 	forwardMedium.inStartup = function (self) local vel = 20 if not self.c1.lookingRight then vel = -vel end   self.c1:move(vel,0,self.c2) end
 	forwardMedium.inRecovery = function (self) local vel = -10 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
-	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}})
+	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60),hitstun(opponent,toMake,30))
 	
 	mediumPunch.onFrame[9] = function (self) 
 		added = rect(162+self.c1.x,90+self.c1.y,127,57)  
@@ -243,16 +247,18 @@ function love.update(dt)
 		if v.update then v:update() end
 	end
 	
-	if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(226) -- make characters always face each other
-	elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(226) end
-		
 	if c1.nextState then
-		c1.state = c1.nextState
+		c1.setState(c1.nextState)
 		c1.nextState = nil
 	end
 	
 	if c2.nextState then
-		c2.state = c2.nextState
+		c2:setState(c2.nextState)
 		c2.nextState = nil
 	end
+	
+	if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(226) -- make characters always face each other
+	elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(226) end
+		
+
 end

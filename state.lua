@@ -100,6 +100,10 @@ local function turnInputsIn(tableToTurn)
 	end
 end
 
+function state:supplyBoxes()
+	return self.hurtboxValues,self.collisionboxValues 
+end
+
 function state:turnInputs()
 	for k,v in ipairs(self.patterns) do
 		local turnedInput = turnInput(v)

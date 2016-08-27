@@ -72,7 +72,6 @@ function char:move(xVel,yVel,otherChar,ignoreCollision)
 	if(ignoreCollision or not checkCollision(self,otherChar,xVel,yVel)) then
 			doMove(self,xVel,yVel)
 			nowCollide,distance = checkCollision(self,otherChar,xVel,yVel)
-			print(nowCollide)
 			if not ignoreCollision and nowCollide then
 				doMove(self,-distance,0)
 			end
@@ -123,7 +122,12 @@ function char:handleInput(inputs)
 	self.state:handleInput(inputs)
 end
 
+function char:supplyBoxes()
+	return self.state:supplyBoxes()
+end
+
 function char:update()
+	print(self.back)
 	self.state:update()
 	self.handler:update()
 	
