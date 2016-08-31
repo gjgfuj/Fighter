@@ -68,12 +68,12 @@ end
 
 local function makeTestChar(toMake,opponent)
 	toMake.image = image
-	local forwardMedium = attack(toMake,opponent,10,5,20,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60),hitstun(opponent,toMake,30))--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
+	local forwardMedium = attack(toMake,opponent,10,5,20,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,100),hitstun(opponent,toMake,30,100))--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
 	forwardMedium.inStartup = function (self) local vel = 20 if not self.c1.lookingRight then vel = -vel end   self.c1:move(vel,0,self.c2) end
 	forwardMedium.inRecovery = function (self) local vel = -10 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
-	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60),hitstun(opponent,toMake,30))
+	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,100),hitstun(opponent,toMake,30,100))
 	
 	mediumPunch.onFrame[9] = function (self) 
 		added = rect(162+self.c1.x,90+self.c1.y,127,57)  
@@ -121,22 +121,6 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack:addHurtbox(180,22,44,37)
 	fireballAttack:addCollisionbox(14,90,157,315)
 	fireballAttack:addCollisionbox(60,2,80,88)
-	
-	local slide = sliding(toMake,opponent,50,{},{},{},{})
-	slide:addHurtbox(60,2,80,88)
-	slide:addHurtbox(14,91,147,65)
-	slide:addHurtbox(6,157,165,75)
-	slide:addHurtbox(0,233,170,44)
-	slide:addHurtbox(4,277,181,24)
-	slide:addHurtbox(5,302,185,24)
-	slide:addHurtbox(35,327,160,35)
-	slide:addHurtbox(40,363,150,8)
-	slide:addHurtbox(25,372,175,33)
-	slide:addHurtbox(162,90,53,57)
-	slide:addHurtbox(175,60,39,29)
-	slide:addHurtbox(180,22,44,37)
-	slide:addCollisionbox(14,90,157,315)
-	slide:addCollisionbox(60,2,80,88)
 	
 	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch},{['MP,r'] = forwardMedium},{},{["MP,r,rd,d"] = fireballAttack})
 	standingState:addHurtbox(60,2,80,88)
@@ -206,7 +190,7 @@ end
 
 function love.load()
 	image = love.graphics.newImage("Images/Brett.png")
-	love.window.setMode(1920,1080,{["fullscreen"] = false,["fullscreentype"]= "desktop", ["vsync"] = true})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	
@@ -240,8 +224,8 @@ function love.draw()
 end
 
 function love.update(dt)
-	c1:update()
-	c2:update()
+	c1:update(c2)
+	c2:update(c1)
 	
 	for k,v in ipairs(entities) do
 		if v.update then v:update() end

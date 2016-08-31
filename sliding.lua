@@ -4,27 +4,22 @@ local sliding = {}
 
 setmetatable(sliding,sliding)
 
-sliding .__index = state
-
-function sliding:__call(c1,c2,xVel,buttons,combinations,fpcombinations,patternStates)
-	local nt = {c1 = c1,c2 = c2,xVel = xVel,buttons = buttons, combinations = combinations, fpcombinations = fpcombinations, patternStates = patternStates}
+function sliding:__call(xVel)
+	local nt = {xVel = xVel}
 	nt.xVelPositive = nt.xVel > 0
-	nt.patterns = {}
-	for k,v in ipairs(nt.patternStates) do
-		table.insert(nt.patterns,k)
-	end
 	setmetatable(nt,{__index = sliding})
 	return nt
 end
 
-function sliding:update()
-	self.c1:move(self.xVel,0,self.c2)
+function sliding:update(ch,ch2)
+	print(ch.state.hurtboxes[4].x,ch.x)
+	ch:move(self.xVel,0,ch2)
 	if self.xVelPositive then
 		self.xVel = self.xVel -5
-		if self.xVel <= 0 then self.c1:setState(self.c1.standing:copy()) end
+		if self.xVel <= 0 then ch:removeBonus(self) end
 	else
 		self.xVel = self.xVel + 5
-		if self.xVel >= 0 then self.c1:setState(self.c1.standing:copy()) end
+		if self.xVel >= 0 then ch:removeBonus(self) end
 	end
 end
 

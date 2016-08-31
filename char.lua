@@ -6,7 +6,7 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny,handler)
-	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r'}
+	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}}
 	setmetatable(c,char)
 	return c
 end
@@ -126,10 +126,15 @@ function char:supplyBoxes()
 	return self.state:supplyBoxes()
 end
 
-function char:update()
-	print(self.back)
+function char:update(opponent)
 	self.state:update()
 	self.handler:update()
+	
+	for k,v in ipairs(self.bonus) do
+		v:update(self,opponent)
+	end
+	
+	print(self.state.type)
 	
 	love.graphics.setColor(0,255,0)
 end
@@ -145,6 +150,7 @@ end
 function char:setState(toSet)
 	self.lookingRight = true
 	self.state = toSet
+	toSet:init()
 	self.state:update()
 end
 
@@ -168,6 +174,15 @@ function char:doDamage(damage)
 	--TODO
 end
 
+function char:addBonus(b)
+	table.insert(self.bonus,b)
+	self.bonusIndexes[b] = #self.bonus
+end
+
+function char:removeBonus(b)
+	table.remove(self.bonus,self.bonusIndexes[b])
+	self.bonusIndexes[b] = nil
+end
 --inner class hurtbox
 local hurtbox = {}
 setmetatable(hurtbox,hurtbox)

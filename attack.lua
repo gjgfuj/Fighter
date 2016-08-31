@@ -12,9 +12,6 @@ end
 function attack:__call(ch1,ch2,s,a,r,hitb,damage,chip,effect,blockEffect)
 	local nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, damage = damage,chip = chip,effect = effect,blockEffect = blockEffect,inputsRight = true}
 	if hitb then nt.hitboxValues = hitb end
-	nt.slide = sliding(nt.c2,nt.c1,30,{},{},{},{})
-	nt.slide:addCollisionbox(0,0,226,800)
-	nt.slide:addHurtbox(0,0,226,800)
 	setmetatable(nt,attack)
 	return nt 
 end
@@ -22,7 +19,8 @@ end
 function attack:update()
 	self.frames_passed = self.frames_passed + 1
 	if self.onFrame[self.frames_passed] then self.onFrame[self.frames_passed](self) end
-	if self.frames_passed <= self.startup then if self.inStartup then self:inStartup() end --if you're still in startup frames do nothing
+	if self.frames_passed <= self.startup then 
+		if self.inStartup then self:inStartup() end --if you're still in startup frames do nothing
 	elseif self.frames_passed <= self.startup+self.active then -- if you're in active frames then check for collision
 		if self.beforeCollisionCheck then self:beforeCollisionCheck() end
 		if self.hitboxes then 
@@ -31,6 +29,7 @@ function attack:update()
 					if(v1:collide(v2)) then 
 						self:resolveHit()
 						self.hitboxes = nil -- when a hit occurs despawn the hitboxes
+						return
 					end
 				end
 			end

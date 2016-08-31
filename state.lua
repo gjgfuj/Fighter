@@ -2,6 +2,7 @@ local state = {}
 
 setmetatable(state,state)
 
+state.type = "state"
 function state:__index(key)
 	return rawget(state,key)
 end
@@ -131,4 +132,6 @@ function state:getBottom()
 	return maximum
 end
 
+function state:init()
+end
 return state
