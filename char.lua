@@ -6,7 +6,7 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny,handler)
-	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}}
+	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}, knockupHurtboxes = {}, knockupCollisionboxes = {}}
 	setmetatable(c,char)
 	return c
 end
@@ -47,6 +47,13 @@ local function doMove(self,xVel,yVel)
 	v:setY(v.y+yVel)
 	end end 
 end
+
+
+function char:setKnockupBoxes(hurt,colli)
+	self.knockupHurtboxes = hurt
+	self.knockupCollisionboxes = colli
+end
+
 
 local function checkCollision(self,otherChar,xVel,yVel)
 	if xVel < 0 then -- when moving to the left
@@ -91,7 +98,7 @@ end
 
 function char:flip(width)--this one's most likely temporary
 	self.lookingRight = not self.lookingRight 
-	if not (self.lookingRight and self.back == l) or not (not self.lookingRight and self.back == r) then
+	if not (self.lookingRight and self.back == 'l') or not (not self.lookingRight and self.back == 'r') then
 		local backBuffer = self.back
 		self.back = self.forward
 		self.forward = backBuffer
@@ -134,7 +141,6 @@ function char:update(opponent)
 		v:update(self,opponent)
 	end
 	
-	print(self.state.type)
 	
 	love.graphics.setColor(0,255,0)
 end
@@ -150,7 +156,6 @@ end
 function char:setState(toSet)
 	self.lookingRight = true
 	self.state = toSet
-	toSet:init()
 	self.state:update()
 end
 

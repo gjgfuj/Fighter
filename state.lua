@@ -8,7 +8,7 @@ function state:__index(key)
 end
 
 function state:__call(c1,c2,buttons,combinations,fpcombinations,patternStates)
-	local nt = {c1=c1, c2=c2, buttons=buttons, combinations=combinations, fpcombinations = fpcombinations, patternStates=patternStates}
+	local nt = {c1=c1, c2=c2, buttons=buttons, combinations=combinations, fpcombinations = fpcombinations, patternStates=patternStates,inputsRight = true}
 	nt.hurtboxes = {}
 	nt.collisionboxes = {}
 	nt.patterns = {}
@@ -83,6 +83,7 @@ function state:copy()
 	if nt.collisionboxValues then for k,v in ipairs(nt.collisionboxValues) do
 		table.insert(nt.collisionboxes,rect(v[1]+nt.c1.x,v[2]+nt.c1.y,v[3],v[4]))
 	end end
+	nt:init()
 	return nt
 end
 
@@ -130,6 +131,10 @@ function state:getBottom()
 		end
 	end
 	return maximum
+end
+
+function state:acquireBoxes()
+	self.hurtboxValues,self.collisionboxValues = self.c1:supplyBoxes()
 end
 
 function state:init()

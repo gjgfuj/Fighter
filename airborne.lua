@@ -8,13 +8,19 @@ setmetatable(airborne,airborne)
 airborne.__index = state
 
 function airborne:update()
+	print(self.xVel,self.yVel)
 	if self.c1:getBottom() and self.yVel >= 0 and self.c1:getBottom() >= MAP_BOTTOM then
-		self.c1:setState(self.c1.standing:copy())
+		if self.fallback then ---Allow to plug in different behaviour when touching the ground such as knockdown
+			self.fallback:acquireBoxes()
+		    self.c1:setState(self.fallback:copy()) 
+		else 
+		    self.c1:setState(self.c1.standing:copy()) 
+		end
 	else
 		self.yVel=self.yVel+3000/60
 		self.c1:move(self.xVel/60,self.yVel/60,self.c2)
 	end
-	for k,v in ipairs(self.collisionboxes) do
+	if self.yVel > 0 then for k,v in ipairs(self.collisionboxes) do
 		for k2,v2 in ipairs(self.c2.state.collisionboxes) do
 			if(v:collide(v2)) then
 				local vmid = self.c1.x + (v.endx - v.x)/2
@@ -26,7 +32,7 @@ function airborne:update()
 				end
 			end
 		end
-	end
+	end end
 end
 
 return airborne

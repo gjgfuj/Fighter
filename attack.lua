@@ -40,7 +40,8 @@ function attack:update()
 end
 
 function attack:resolveHit()
-		self.effect.hurtboxValues,self.effect.collisionboxValues = self.c2:supplyBoxes()
+		self.effect:acquireBoxes()
+		self.blockEffect:acquireBoxes()
 		self.c2:handleHit(self.damage,self.chip,self.effect,self.blockEffect,self.level)
 end
 

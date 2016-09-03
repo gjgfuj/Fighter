@@ -1,7 +1,7 @@
 local state = require "state"
 local sliding = require "sliding"
 
-local friction = 5
+local friction = 1
 local hitstun = {}
 
 hitstun.type = "hitstun"
@@ -13,7 +13,6 @@ function hitstun:__call(c1,c2,length,pushback)
 	local nt = state(c1,c2,{},{},{},{})
 	nt.length = length
 	nt.pushback = pushback
-	print(nt.pushback)
 	setmetatable(nt,{__index = hitstun})
 	return nt
 end
@@ -30,7 +29,7 @@ function hitstun:init()
 	distance = distance/friction
 	local startVel = (-0.5+math.sqrt(0.25+2*distance))*friction
 	if not self.c2.lookingRight then startVel = -startVel end
-	self.c1:addBonus(sliding(startVel),self.c2)
+	self.c1:addBonus(sliding(startVel,friction),self.c2)
 end
 
 return hitstun

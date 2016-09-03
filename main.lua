@@ -8,10 +8,12 @@ local crouching = require "crouching"
 local jumping = require "jumping"
 local sliding = require "sliding"
 local hitstun = require "hitstun"
+local knockup = require "knockup"
+local knockdown = require "knockdown"
 
 local c1
 local c2
-
+local fps = 0
 local image
 
 function love.run()
@@ -26,44 +28,44 @@ function love.run()
 	if love.timer then love.timer.step() end
  
 	local dt = 0
- 
+	local accumulator = 0.0
+	local lastFrame = 0
 	-- Main loop time.
 	while true do
-		local start_time = love.timer.getTime()
-		-- Process events.
-		if love.event then
-			love.event.pump()
-			for name, a,b,c,d,e,f in love.event.poll() do
-				if name == "quit" then
-					if not love.quit or not love.quit() then
-						return a
-					end
-				end
-				love.handlers[name](a,b,c,d,e,f)
-			end
-		end
- 
-		-- Update dt, as we'll be passing it to update
 		if love.timer then
 			love.timer.step()
 			dt = love.timer.getDelta()
 		end
-		
-		-- Call update and draw
-		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
- 
-		if love.graphics and love.graphics.isActive() then
-			love.graphics.clear(love.graphics.getBackgroundColor())
-			love.graphics.origin()
-			if love.draw then love.draw() end
-			love.graphics.present()
+		accumulator = accumulator + dt
+		if(accumulator >= 1/60) then
+			accumulator = accumulator - 1/60
+			if love.event then
+				love.event.pump()
+				for name, a,b,c,d,e,f in love.event.poll() do
+					if name == "quit" then
+						if not love.quit or not love.quit() then
+							return a
+						end
+					end
+					love.handlers[name](a,b,c,d,e,f)
+				end
+			end
+	 
+			-- Update dt, as we'll be passing it to update
+			
+			-- Call update and draw
+			if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
+	 
+			if love.graphics and love.graphics.isActive() then
+				love.graphics.clear(love.graphics.getBackgroundColor())
+				love.graphics.origin()
+				if love.draw then love.draw() end
+				love.graphics.present()
+			end
+			fps = 1/(love.timer.getTime()-lastFrame)
+			lastFrame = love.timer.getTime()
 		end
-		local end_time = love.timer.getTime()
-		local frame_time = end_time - start_time
-		
-		if love.timer then love.timer.sleep(1/60-frame_time) end
 	end
- 
 end
 
 local function makeTestChar(toMake,opponent)
@@ -74,6 +76,8 @@ local function makeTestChar(toMake,opponent)
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
 	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,100),hitstun(opponent,toMake,30,100))
+	local heavyPunch = attack(toMake,opponent,8,5,1,{{162,0,127,147}},100,10,knockup(opponent,toMake,500,-1750),hitstun(opponent,toMake,30,500))
+	heavyPunch.effect.fallback = knockdown(opponent,toMake,300)
 	
 	mediumPunch.onFrame[9] = function (self) 
 		added = rect(162+self.c1.x,90+self.c1.y,127,57)  
@@ -94,6 +98,18 @@ local function makeTestChar(toMake,opponent)
 	mediumPunch:addHurtbox(25,372,175,33)
 	mediumPunch:addCollisionbox(14,90,157,315)
 	mediumPunch:addCollisionbox(60,2,80,88)
+	
+	heavyPunch:addHurtbox(60,2,80,88)
+	heavyPunch:addHurtbox(14,91,147,65)
+	heavyPunch:addHurtbox(6,157,165,75)
+	heavyPunch:addHurtbox(0,233,170,44)
+	heavyPunch:addHurtbox(4,277,181,24)
+	heavyPunch:addHurtbox(5,302,185,24)
+	heavyPunch:addHurtbox(35,327,160,35)
+	heavyPunch:addHurtbox(40,363,150,8)
+	heavyPunch:addHurtbox(25,372,175,33)
+	heavyPunch:addCollisionbox(14,90,157,315)
+	heavyPunch:addCollisionbox(60,2,80,88)
 	
 	forwardMedium:addHurtbox(60,2,80,88)
 	forwardMedium:addHurtbox(14,91,147,65)
@@ -122,7 +138,7 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack:addCollisionbox(14,90,157,315)
 	fireballAttack:addCollisionbox(60,2,80,88)
 	
-	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch},{['MP,r'] = forwardMedium},{},{["MP,r,rd,d"] = fireballAttack})
+	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch},{['MP,r'] = forwardMedium},{},{["MP,r,rd,d"] = fireballAttack})
 	standingState:addHurtbox(60,2,80,88)
 	standingState:addHurtbox(14,91,147,65)
 	standingState:addHurtbox(6,157,165,75)
@@ -186,11 +202,13 @@ local function makeTestChar(toMake,opponent)
 	jumpingBack:addCollisionbox(65,148,80,88)
 	jumpingBack:addCollisionbox(0,236,194,169)
 	toMake:setJumpBack(jumpingBack)
+	
+	toMake:setKnockupBoxes({{0,(toMake:getBottom()-toMake.y-100),(toMake:getBottom()-toMake.y),100}},{{0,toMake:getBottom()-toMake.y-100,toMake:getBottom()-toMake.y,100}})
 end
 
 function love.load()
 	image = love.graphics.newImage("Images/Brett.png")
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = false})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	
@@ -215,7 +233,7 @@ function love.draw()
 	love.graphics.setColor(0,38,153)
 	love.graphics.rectangle("fill",0,900,1920,180)
 	love.graphics.setColor(255,255,255)
-	love.graphics.print("FPS:"..love.timer.getFPS(),0,0)
+	love.graphics.print("FPS:"..fps,0,0)
 	c1:draw(500,"c1")
 	c2:draw(1000,"c2")
 	for k,v in ipairs(entities) do
@@ -232,11 +250,12 @@ function love.update(dt)
 	end
 	
 	if c1.nextState then
-		c1.setState(c1.nextState)
+		c1:setState(c1.nextState)
 		c1.nextState = nil
 	end
 	
 	if c2.nextState then
+		print(c2.nextState)
 		c2:setState(c2.nextState)
 		c2.nextState = nil
 	end
