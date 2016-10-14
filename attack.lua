@@ -36,7 +36,7 @@ function attack:update()
 		end
 		if self.afterCollisionCheck then self:afterCollisionCheck() end
 	elseif self.frames_passed <= self.startup+self.active+self.recovery then if self.inRecovery then self:inRecovery() end --in recovery frames just do nothing again
-	else self.c1:setState(self.c1.standing:copy()) end
+	else self:fallback() end
 end
 
 function attack:resolveHit()

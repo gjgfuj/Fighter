@@ -10,15 +10,15 @@ airborne.__index = state
 function airborne:update()
 	print(self.xVel,self.yVel)
 	if self.c1:getBottom() and self.yVel >= 0 and self.c1:getBottom() >= MAP_BOTTOM then
-		if self.fallback then ---Allow to plug in different behaviour when touching the ground such as knockdown
-			self.fallback:acquireBoxes()
-		    self.c1:setState(self.fallback:copy()) 
-		else 
-		    self.c1:setState(self.c1.standing:copy()) 
-		end
+		if self.fallbackState then self.fallbackState:acquireBoxes() end
+		self:fallback()
 	else
 		self.yVel=self.yVel+3000/60
 		self.c1:move(self.xVel/60,self.yVel/60,self.c2)
+		if self.hitboxes then for k,v in ipairs(self.hitboxes) do
+			v.setX(v.x+xVel)
+			v.setY(v.y+yVel)
+		end end
 	end
 	if self.yVel > 0 then for k,v in ipairs(self.collisionboxes) do
 		for k2,v2 in ipairs(self.c2.state.collisionboxes) do

@@ -13,6 +13,9 @@ function standing:__call(character1, character2,buttons,combinations,fpcombinati
 end
 
 function standing:update()
+	if(self.c1.x < self.c2.x ~= self.c1.lookingRight) then
+	    self.c1:flip(226)
+	end
 	if not self:checkInputs() then 
 		if self.c1.handler:isHeld('l') then 
 			self.c1:move(-500*1/60,0,self.c2)  -- horizontal movement

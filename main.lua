@@ -77,7 +77,7 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
 	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,100),hitstun(opponent,toMake,30,100))
 	local heavyPunch = attack(toMake,opponent,8,5,1,{{162,0,127,147}},100,10,knockup(opponent,toMake,500,-1750),hitstun(opponent,toMake,30,500))
-	heavyPunch.effect.fallback = knockdown(opponent,toMake,300)
+	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,300)
 	
 	mediumPunch.onFrame[9] = function (self) 
 		added = rect(162+self.c1.x,90+self.c1.y,127,57)  
@@ -208,7 +208,7 @@ end
 
 function love.load()
 	image = love.graphics.newImage("Images/Brett.png")
-	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = false})
+	love.window.setMode(1920,1080,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 500
 	
@@ -255,13 +255,7 @@ function love.update(dt)
 	end
 	
 	if c2.nextState then
-		print(c2.nextState)
 		c2:setState(c2.nextState)
 		c2.nextState = nil
 	end
-	
-	if(c2.x < c1.x and c1.lookingRight or c2.x > c1.x and not c1.lookingRight) then c1:flip(226) -- make characters always face each other
-	elseif (c1.x < c2.x and c2.lookingRight or c1.x > c2.x and not c2.lookingRight) then c2:flip(226) end
-		
-
 end

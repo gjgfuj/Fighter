@@ -83,7 +83,6 @@ function state:copy()
 	if nt.collisionboxValues then for k,v in ipairs(nt.collisionboxValues) do
 		table.insert(nt.collisionboxes,rect(v[1]+nt.c1.x,v[2]+nt.c1.y,v[3],v[4]))
 	end end
-	nt:init()
 	return nt
 end
 
@@ -135,6 +134,10 @@ end
 
 function state:acquireBoxes()
 	self.hurtboxValues,self.collisionboxValues = self.c1:supplyBoxes()
+end
+
+function state:fallback()
+	if self.fallbackState then self.c1:setState(self.fallbackState:copy()) else self.c1:setState(self.c1.standing:copy()) end
 end
 
 function state:init()

@@ -12,7 +12,7 @@ function knockup:__call(c1,c2,xVel, yVel,fallEffect)
 	setmetatable(nt,{__index = knockup})
 	nt.xVel = xVel
 	nt.yVel = yVel
-	nt.fallback = fallEffect
+	nt.fallbackState = fallEffect
 	return nt
 end
 
