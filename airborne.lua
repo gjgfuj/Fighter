@@ -8,8 +8,9 @@ setmetatable(airborne,airborne)
 airborne.__index = state
 
 function airborne:update()
-	print(self.xVel,self.yVel)
+	print(self.c1:getHeight(),self.c1.state.collisionboxes[1].y-self.c1.y)
 	if self.c1:getBottom() and self.yVel >= 0 and self.c1:getBottom() >= MAP_BOTTOM then
+		self.c1:move(0,MAP_BOTTOM-self.c1:getBottom(),self.c2)
 		if self.fallbackState then self.fallbackState:acquireBoxes() end
 		self:fallback()
 	else

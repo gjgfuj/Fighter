@@ -76,7 +76,7 @@ local function makeTestChar(toMake,opponent)
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
 	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,100),hitstun(opponent,toMake,30,100))
-	local heavyPunch = attack(toMake,opponent,8,5,1,{{162,0,127,147}},100,10,knockup(opponent,toMake,500,-1750),hitstun(opponent,toMake,30,500))
+	local heavyPunch = attack(toMake,opponent,8,5,1,{{162,0,127,147}},100,10,knockup(opponent,toMake,0,-1750),hitstun(opponent,toMake,30,500))
 	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,300)
 	
 	mediumPunch.onFrame[9] = function (self) 
@@ -230,6 +230,7 @@ function love.load()
 end
 
 function love.draw()
+	love.graphics.scale(1368/1920,768/1080)
 	love.graphics.setColor(0,38,153)
 	love.graphics.rectangle("fill",0,900,1920,180)
 	love.graphics.setColor(255,255,255)

@@ -18,7 +18,7 @@ function crouching:update()
 	end
 	if not self:checkInputs() then
 		if not(self.c1.handler:isHeld('ld') or self.c1.handler:isHeld('d') or self.c1.handler:isHeld('rd')) then
-			self.c1:setState(self.c1.standing:copy())
+			self.c1:setState(self.c1.standing)
 		end
 	end
 end

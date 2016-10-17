@@ -24,7 +24,7 @@ function jumpingAttack:fallback()
 	local newJumping = self.c1.jumping:copy()
 	newJumping.xVel = self.xVel
 	newJumping.yVel = self.yVel
-	self.c1:setState(newJumping:copy())
+	self.c1:setState(newJumping)
 end
 
 return jumpingAttack

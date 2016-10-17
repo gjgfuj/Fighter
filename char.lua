@@ -13,7 +13,7 @@ end
 
 function char:setstanding(newstanding)
 	self.standing = newstanding
-	self.state = self.standing:copy()
+	self:setState(self.standing)
 end
 
 function char:setCrouching(newCrouching)
@@ -154,7 +154,7 @@ function char:isBlocking()
 end
 
 function char:setState(toSet)
-	self.state = toSet
+	self.state = toSet:copy()
 	if not self.lookingRight then
 		self.lookingRight = true
 	    self:flip(226)
@@ -191,6 +191,10 @@ end
 function char:removeBonus(b)
 	table.remove(self.bonus,self.bonusIndexes[b])
 	self.bonusIndexes[b] = nil
+end
+
+function char:getHeight()
+	return self:getBottom() - self.y
 end
 --inner class hurtbox
 local hurtbox = {}

@@ -22,13 +22,13 @@ function standing:update()
 		elseif self.c1.handler:isHeld('r') then 
 			self.c1:move(500*1/60,0,self.c2)  -- horizontal movement
 		elseif self.c1.handler:isHeld('d') or self.c1.handler:isHeld('ld') or self.c1.handler:isHeld('rd') then
-			self.c1:setState(self.c1.crouching:copy())
+			self.c1:setState(self.c1.crouching)
 		elseif self.c1.handler:isHeld('u') then
-			self.c1:setState(self.c1.jumping:copy())
+			self.c1:setState(self.c1.jumping)
 		elseif self.c1.handler:isHeld('ru') then
-			self.c1:setState(self.c1.jumpForward:copy())
+			self.c1:setState(self.c1.jumpForward)
 		elseif self.c1.handler:isHeld('lu') then 
-			self.c1:setState(self.c1.jumpBack:copy())
+			self.c1:setState(self.c1.jumpBack)
 		end
 	end
 end
@@ -36,10 +36,10 @@ end
 function standing:handleHit(damage,chip,hitEffect,blockEffect,level)
 	if self.c1.handler:isHeld(self.c1.back) and level ~= 'L' then --if the player is holding back here he is blocking high
 		self.c1:doDamage(chip)
-		self.c1:queueState(blockEffect:copy())
+		self.c1:queueState(blockEffect)
 	else
 		self.c1:doDamage(damage)
-		self.c1:queueState(hitEffect:copy())
+		self.c1:queueState(hitEffect)
 	end
 end
 

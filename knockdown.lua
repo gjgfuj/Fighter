@@ -15,7 +15,7 @@ end
 function knockdown:update()
 	self.length = self.length - 1
 	if self.length <= 0 then 
-		self.c1:setState(self.c1.standing:copy())
+		self.c1:setState(self.c1.standing)
 	end
 end
 

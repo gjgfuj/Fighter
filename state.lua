@@ -23,24 +23,24 @@ function state:checkInputs()
 	if self.__base.inputsRight ~= self.c1.lookingRight then self:turnInputs() end
 	pattern = self.c1.handler:patternRecognition(self.patterns)
 	if pattern then
-		self.c1:setState(self.patternStates[pattern]:copy())
+		self.c1:setState(self.patternStates[pattern])
 		return true
 	end
 	for input,result in pairs(self.fpcombinations) do
 		if self.c1.handler.isTapped(unpack(splitString(input,','))) then
-			self.c1:setState(result:copy())
+			self.c1:setState(result)
 			return true
 		end 
 	end
 	for input,result in pairs(self.combinations) do
 		if self.c1.handler:buttonCombination(unpack(splitString(input,','))) then
-			self.c1:setState(result:copy())
+			self.c1:setState(result)
 			return true
 		end
 	end
 	for input,result in pairs(self.buttons) do
 		if self.c1.handler:isTapped(input) then
-			self.c1:setState(result:copy())
+			self.c1:setState(result)
 			return true
 		end
 	end
@@ -119,7 +119,7 @@ end
 
 function state:handleHit(damage,chip,hitEffect) -- the default implementation assumes that the character wasn't able to block
 	self.c1:doDamage(damage)
-	self.c1:queueState(hitEffect:copy())
+	self.c1:queueState(hitEffect)
 end
 
 function state:getBottom()
@@ -137,7 +137,7 @@ function state:acquireBoxes()
 end
 
 function state:fallback()
-	if self.fallbackState then self.c1:setState(self.fallbackState:copy()) else self.c1:setState(self.c1.standing:copy()) end
+	if self.fallbackState then self.c1:setState(self.fallbackState) else self.c1:setState(self.c1.standing) end
 end
 
 function state:init()
