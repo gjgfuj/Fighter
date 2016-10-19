@@ -20,25 +20,34 @@ function attack:update()
 	self.frames_passed = self.frames_passed + 1
 	if self.onFrame[self.frames_passed] then self.onFrame[self.frames_passed](self) end
 	if self.frames_passed <= self.startup then 
-		if self.inStartup then self:inStartup() end --if you're still in startup frames do nothing
+		self:startupFrames()
 	elseif self.frames_passed <= self.startup+self.active then -- if you're in active frames then check for collision
-		if self.beforeCollisionCheck then self:beforeCollisionCheck() end
-		if self.hitboxes then 
-			for k1,v1 in ipairs(self.hitboxes) do
-				for k2,v2 in ipairs(self.c2.state.hurtboxes) do
-					if(v1:collide(v2)) then 
-						self:resolveHit()
-						self.hitboxes = nil -- when a hit occurs despawn the hitboxes
-						return
-					end
-				end
-			end
-		end
-		if self.afterCollisionCheck then self:afterCollisionCheck() end
+		self:activeFrames()
 	elseif self.frames_passed <= self.startup+self.active+self.recovery then if self.inRecovery then self:inRecovery() end --in recovery frames just do nothing again
 	else self:fallback() end
 end
 
+function attack:startupFrames()
+	if self.inStartup then 
+		self.inStartup() 
+	end
+end
+
+function attack:activeFrames()
+	if self.beforeCollisionCheck then self:beforeCollisionCheck() end
+	if self.hitboxes then 
+		for k1,v1 in ipairs(self.hitboxes) do
+			for k2,v2 in ipairs(self.c2.state.hurtboxes) do
+				if(v1:collide(v2)) then 
+					self:resolveHit()
+					self.hitboxes = nil -- when a hit occurs despawn the hitboxes
+					return
+				end
+			end
+		end
+	end
+	if self.afterCollisionCheck then self:afterCollisionCheck() end
+end
 function attack:resolveHit()
 		self.effect:acquireBoxes()
 		self.blockEffect:acquireBoxes()

@@ -39,8 +39,7 @@ function airborne:update()
 end
 
 function airborne:setState(toSet)
-	print("CALLED\n",toSet.overwriteVel,toSet.isAirborneState)
-	if(true)then--not toSet.overwriteVel and toSet.isAirborneState) then
+	if(not toSet.overwriteVel and toSet.isAirborneState) then
 		modifiedState = toSet:copy()--Copy the state as not to overwrite Prototype values
 		--replace the velocitys so the motion will appear uninterrupted
 		modifiedState.xVel = self.xVel

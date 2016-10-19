@@ -1,5 +1,6 @@
 local rect = require("rect")
 
+local rotation = 0;
 local char = {}
 setmetatable(char,char)
 function char:__index(key)
