@@ -10,6 +10,7 @@ local sliding = require "sliding"
 local hitstun = require "hitstun"
 local knockup = require "knockup"
 local knockdown = require "knockdown"
+local jumpingAttack = require "jumpingAttack"
 
 local c1
 local c2
@@ -77,7 +78,7 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 750 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
 	local mediumPunch = attack(toMake,opponent,5,3,10,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,100),hitstun(opponent,toMake,30,100))
 	local heavyPunch = attack(toMake,opponent,8,5,1,{{162,0,127,147}},100,10,knockup(opponent,toMake,0,-1750),hitstun(opponent,toMake,30,500))
-	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,300)
+	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,30)
 	
 	mediumPunch.onFrame[9] = function (self) 
 		added = rect(162+self.c1.x,90+self.c1.y,127,57)  
@@ -169,8 +170,24 @@ local function makeTestChar(toMake,opponent)
 	crouchingState:addCollisionbox(65,148,80,88)
 	crouchingState:addCollisionbox(0,236,194,169)
 	toMake:setCrouching(crouchingState)
+	
+	local jumpingMP = jumpingAttack(toMake,opponent,0,0,10,6,20,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,400),hitstun(opponent,toMake,10,400))
+	jumpingMP:addHurtbox(60,2,80,88)
+	jumpingMP:addHurtbox(14,91,147,65)
+	jumpingMP:addHurtbox(6,157,165,75)
+	jumpingMP:addHurtbox(0,233,170,44)
+	jumpingMP:addHurtbox(4,277,181,24)
+	jumpingMP:addHurtbox(5,302,185,24)
+	jumpingMP:addHurtbox(35,327,160,35)
+	jumpingMP:addHurtbox(40,363,150,8)
+	jumpingMP:addHurtbox(25,372,175,33)
+	jumpingMP:addHurtbox(162,90,53,57)
+	jumpingMP:addHurtbox(175,60,39,29)
+	jumpingMP:addHurtbox(180,22,44,37)
+	jumpingMP:addCollisionbox(14,90,157,315)
+	jumpingMP:addCollisionbox(60,2,80,88)
 
-	local jumpingState = jumping(toMake,opponent,0,-1750,{},{},{},{})
+	local jumpingState = jumping(toMake,opponent,0,-1750,{MP=jumpingMP},{},{},{})
 	jumpingState:addHurtbox(60,2,80,88)
 	jumpingState:addHurtbox(14,91,147,65)
 	jumpingState:addHurtbox(6,157,165,75)
@@ -187,7 +204,7 @@ local function makeTestChar(toMake,opponent)
 	jumpingState:addCollisionbox(60,2,80,88)
 	toMake:setJumping(jumpingState)
 	
-	local jumpingForward = jumping(toMake,opponent,750,-1750,{},{},{},{})
+	local jumpingForward = jumping(toMake,opponent,750,-1750,{MP=jumpingMP},{},{},{})
 	jumpingForward:addHurtbox(65,148,80,88)
 	jumpingForward:addHurtbox(0,301,194,104)
 	jumpingForward:addHurtbox(0,236,180,64)
@@ -195,7 +212,7 @@ local function makeTestChar(toMake,opponent)
 	jumpingForward:addCollisionbox(0,236,194,169)
 	toMake:setJumpForward(jumpingForward)
 	
-	local jumpingBack = jumping(toMake,opponent,-750,-1750,{},{},{},{})
+	local jumpingBack = jumping(toMake,opponent,-750,-1750,{MP=jumpingMP},{},{},{})
 	jumpingBack:addHurtbox(65,148,80,88)
 	jumpingBack:addHurtbox(0,301,194,104)
 	jumpingBack:addHurtbox(0,236,180,64)
@@ -220,8 +237,8 @@ function love.load()
 	local handler2 = inputHandler("keyboard",mapping2)
 	
 	
-	c1 = char(537,600,handler2)
-	c2 = char(967,600,handler)
+	c1 = char(537,595,handler2)
+	c2 = char(967,595,handler)
 	
 	makeTestChar(c1,c2)
 	makeTestChar(c2,c1)
@@ -243,13 +260,14 @@ function love.draw()
 end
 
 function love.update(dt)
+	--update both characters
 	c1:update(c2)
 	c2:update(c1)
-	
+	--update other entities,such as fireballs	
 	for k,v in ipairs(entities) do
 		if v.update then v:update() end
 	end
-	
+	--assign the states which may have been queued during this frame	
 	if c1.nextState then
 		c1:setState(c1.nextState)
 		c1.nextState = nil

@@ -6,10 +6,14 @@ local jumpingAttack = {}
 
 setmetatable(jumpingAttack,jumpingAttack)
 
-jumpingAttack.__index = attack
+jumpingAttack.__index=attack
+
+jumpingAttack.isAirborneState = true
 
 function jumpingAttack:__call(c1,c2,xVel,yVel,s,a,r,hitb,damage,chip,effect,blockEffect)
 	local nt = attack(c1,c2,s,a,r,hitb,damage,chip,effect,blockEffect)
+	setmetatable(nt,{__index=jumpingAttack})
+	nt.isAirborneState=true
 	nt.xVel = xVel
 	nt.yVel = yVel
 	return nt

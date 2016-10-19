@@ -60,6 +60,7 @@ function attack:copy()
 	nt.hitboxes = {}
 	for k,v in pairs(nt.hitboxValues) do
 		table.insert(nt.hitboxes,rect(v[1]+nt.c1.x,v[2]+nt.c1.y,v[3],v[4]))
+		print(v[2]+nt.c1.y,nt.hitboxes[#nt.hitboxes].y)
 	end
 	return nt
 end

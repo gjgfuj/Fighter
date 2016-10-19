@@ -140,6 +140,10 @@ function state:fallback()
 	if self.fallbackState then self.c1:setState(self.fallbackState) else self.c1:setState(self.c1.standing) end
 end
 
+function state:setState(toSet)
+	self.c1.state = toSet:copy()
+end
+
 function state:init()
 end
 return state

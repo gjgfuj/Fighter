@@ -139,7 +139,6 @@ function char:update(opponent)
 	
 	for k,v in ipairs(self.bonus) do
 		v:update(self,opponent)
-		print(self.x-self.state.hurtboxes[1].x)
 	end
 	
 	love.graphics.setColor(0,255,0)
@@ -154,7 +153,11 @@ function char:isBlocking()
 end
 
 function char:setState(toSet)
-	self.state = toSet:copy()
+	if self.state then 
+		self.state:setState(toSet)
+	else
+		self.state=toSet:copy()
+	end
 	if not self.lookingRight then
 		self.lookingRight = true
 	    self:flip(226)
