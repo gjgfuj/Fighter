@@ -11,6 +11,9 @@ local hitstun = require "hitstun"
 local knockup = require "knockup"
 local knockdown = require "knockdown"
 local jumpingAttack = require "jumpingAttack"
+local throw = require "throw"
+local throwing = require "throwing"
+local thrown = require "thrown"
 
 local c1
 local c2
@@ -80,6 +83,10 @@ local function makeTestChar(toMake,opponent)
 	local heavyPunch = attack(toMake,opponent,8,5,1,{{162,0,127,147}},100,10,knockup(opponent,toMake,0,-1750),hitstun(opponent,toMake,30,500))
 	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,30)
 	
+	local throw = throw(toMake,opponent,6,10,15,{{162,60,25,505}},0,thrown(opponent,toMake,60,240,0),throwing(toMake,opponent,45))
+
+	toMake:setThrowboxes({{0,0,162,505}})
+
 	mediumPunch.onFrame[9] = function (self) 
 		added = rect(162+self.c1.x,90+self.c1.y,127,57)  
 		if not self.c1.lookingRight then 
@@ -139,7 +146,7 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack:addCollisionbox(14,90,157,315)
 	fireballAttack:addCollisionbox(60,2,80,88)
 	
-	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch},{['MP,r'] = forwardMedium},{},{["MP,r,rd,d"] = fireballAttack})
+	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch},{['MP,r'] = forwardMedium},{['LP,LK'] = throw},{["MP,r,rd,d"] = fireballAttack})
 	standingState:addHurtbox(60,2,80,88)
 	standingState:addHurtbox(14,91,147,65)
 	standingState:addHurtbox(6,157,165,75)

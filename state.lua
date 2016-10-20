@@ -27,7 +27,7 @@ function state:checkInputs()
 		return true
 	end
 	for input,result in pairs(self.fpcombinations) do
-		if self.c1.handler.isTapped(unpack(splitString(input,','))) then
+		if self.c1.handler:isTapped(unpack(splitString(input,','))) then
 			self.c1:setState(result)
 			return true
 		end 

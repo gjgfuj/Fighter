@@ -29,7 +29,7 @@ end
 
 function attack:startupFrames()
 	if self.inStartup then 
-		self.inStartup() 
+		self:inStartup() 
 	end
 end
 

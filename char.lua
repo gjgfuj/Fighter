@@ -7,7 +7,7 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny,handler)
-	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}, knockupHurtboxes = {}, knockupCollisionboxes = {}}
+	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}, knockupHurtboxes = {}, knockupCollisionboxes = {},throwboxes = {}}
 	setmetatable(c,char)
 	return c
 end
@@ -199,6 +199,12 @@ end
 
 function char:getHeight()
 	return self:getBottom() - self.y
+end
+
+function char:setThrowboxes(boxes)
+	for k,v in ipairs(boxes) do
+		table.insert(self.throwboxes,rect(v[1],v[2],v[3],v[4]))
+	end
 end
 --inner class hurtbox
 local hurtbox = {}

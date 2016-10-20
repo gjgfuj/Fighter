@@ -1,4 +1,5 @@
 local state = require "state"
+local attack  = require "attack"
 
 local throw = {}
 
@@ -8,17 +9,19 @@ throw.__index = attack
 
 function throw:__call(c1,c2,s,a,r,throwb,damage,partnerState,execution)--partnerState refers to the state the target is put in if the throw connects"
 	local nt = attack(c1,c2,s,a,r,throwb,damage,0,partnerState)
+	setmetatable(nt,{__index=throw})
 	nt.execution = execution
+	print(execution,nt.execution)
 	return nt
 end
 
 function throw:activeFrames()
 	if self.beforeCollisionCheck then self:beforeCollisionCheck() end
 	for k,v in ipairs(self.hitboxes) do
-		for k2,v2 in ipairs(self.c2.state.throwboxes) do
+		for k2,v2 in ipairs(self.c2.state.hurtboxes) do
 			if v:collide(v2) then
 				self:resolveHit()
-				self:hitboxes = nil
+				self.hitboxes = nil
 				return
 			end
 		end

@@ -20,7 +20,6 @@ function knockdown:update()
 end
 
 function knockdown:acquireBoxes()
-	print("Boxes yay")	
 	self.collisionboxValues = self.c1.knockupCollisionboxes
 end
 
