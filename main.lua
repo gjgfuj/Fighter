@@ -144,7 +144,7 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack:addCollisionbox(14,90,157,315)
 	fireballAttack:addCollisionbox(60,2,80,88)
 	
-	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch},{['MP,r'] = forwardMedium},{['LP,LK'] = throw},{["MP,r,rd,d"] = fireballAttack})
+	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch,["HK"] = forwardMedium},{['MP,r'] = forwardMedium},{['LP,LK'] = throw},{["MP,r,rd,d"] = fireballAttack})
 	standingState:addHurtbox(60,2,80,88)
 	standingState:addHurtbox(14,91,147,65)
 	standingState:addHurtbox(6,157,165,75,{"throwable"})
@@ -236,7 +236,7 @@ function love.load()
 	
 	entities = {}
 	
-	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", rt = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
+	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", triggerright = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
 	local mapping2 = {a = 'l' ,d = 'r',w = 'u',s = 'd', f = 'LP', g = 'MP',h= 'HP', c = 'LK', v = 'MK', b = 'HK'}
 	local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
 	local handler2 = inputHandler("keyboard",mapping2)

@@ -20,7 +20,6 @@ function fireball:update()
 		self.hitb:setX(self.hitb.x + self.vel/60)
 		for k,v in ipairs(self.target.state.hurtboxes) do
 			if self.hitb and self.hitb:collide(v) then
-				print("Yis")
 				for k,v in ipairs(entities) do
 					if v == self then 
 						table.remove(entities,k)

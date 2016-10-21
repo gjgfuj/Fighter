@@ -7,7 +7,6 @@ knockdown.__index = state
 function knockdown:__call(c1,c2,length)
 	local nt = state(c1,c2,{},{},{},{})
 	nt.length = length
-	print(nt.length)
 	setmetatable(nt,{__index = knockdown})
 	return nt
 end

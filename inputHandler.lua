@@ -101,10 +101,25 @@ function inputHandler:__call(dv,mp)
 end
 
 function inputHandler:update()
+	--Update the timers of the inputs each frame
 	for k,inp in invertIpairs(self.inputList) do
 		assert(inp.timer >= 0,"inp.timer is: "..inp.timer)
 		inp.timer = inp.timer -1
 		if inp.timer <= 0 then table.remove(self.inputList,k) end
+	end
+	--check on analogue Triggers
+end
+
+function inputHandler:checkAxis(axis)
+	if self.device.isGamepad and self.device:isGamepad() then
+		if self.device:getGamepadAxis(love.GamepadAxis[axis]) >= 0 then
+			if self.mapping(axis) then 
+				table.insert(self.inputList,self.mapping[axis])
+				v.held[v.mapping[axis]]= true
+			else
+				v.held[v.mapping[axis]]= false
+			end
+		end
 	end
 end
 
@@ -274,6 +289,20 @@ function love.keyreleased(key)
 				table.insert(v.inputList,inputHandler.input('l'))
 			elseif inp then 
 				v.held[inp] = false
+			end
+		end
+	end
+end
+
+function love.gamepadaxis(joystick,axis,value)
+	for k,v in ipairs(inputHandlers) do
+		if(v.device == joystick) then 
+			print(v.mapping[axis])
+			if(value >= 1 and v.mapping[axis]) then
+				table.insert(v.inputList,inputHandler.input(v.mapping[axis]))
+				v.held[v.mapping[axis]] = true
+			elseif(v.mapping[axis]) then
+				v.held[v.mapping[axis]] = false
 			end
 		end
 	end

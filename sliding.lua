@@ -12,7 +12,6 @@ function sliding:__call(xVel,friction)
 end
 
 function sliding:update(ch,ch2)
-	print(self.xVel)
 	ch:move(self.xVel,0,ch2)
 	if self.xVelPositive then
 		self.xVel = self.xVel - self.friction
