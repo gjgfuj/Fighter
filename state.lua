@@ -1,3 +1,5 @@
+local char = require "char"
+
 local state = {}
 
 setmetatable(state,state)
@@ -48,9 +50,9 @@ function state:checkInputs()
 end
 
 
-function state:addHurtbox(hx,hy,width,height)
+function state:addHurtbox(hx,hy,width,height,flags)
 	if not self.hurtboxValues then self.hurtboxValues = {} end
-	table.insert(self.hurtboxValues,{hx,hy,width,height}) -- place the hurtboxes in the relative grid
+	table.insert(self.hurtboxValues,{hx,hy,width,height,flags}) -- place the hurtboxes in the relative grid
 	-- This makes initializing hurtboxes consistent regardless of character position
 end
 
@@ -77,7 +79,8 @@ function state:copy()
 	setmetatable(nt,getmetatable(self))
 	nt.hurtboxes = {}
 	if nt.hurtboxValues then for k,v in ipairs(nt.hurtboxValues) do 
-		table.insert(nt.hurtboxes,rect(v[1]+nt.c1.x,v[2]+nt.c1.y,v[3],v[4]))
+		table.insert(nt.hurtboxes,char.hurtbox(v[1]+nt.c1.x,v[2]+nt.c1.y,v[3],v[4],v[5]))
+		nt.hurtboxes[#nt.hurtboxes]:hasFlag()
 	end end
 	nt.collisionboxes = {}
 	if nt.collisionboxValues then for k,v in ipairs(nt.collisionboxValues) do

@@ -19,7 +19,7 @@ function throw:activeFrames()
 	if self.beforeCollisionCheck then self:beforeCollisionCheck() end
 	for k,v in ipairs(self.hitboxes) do
 		for k2,v2 in ipairs(self.c2.state.hurtboxes) do
-			if v:collide(v2) then
+			if v2:hasFlag("throwable") and v:collide(v2) then
 				self:resolveHit()
 				self.hitboxes = nil
 				return

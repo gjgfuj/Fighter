@@ -85,8 +85,6 @@ local function makeTestChar(toMake,opponent)
 	
 	local throw = throw(toMake,opponent,6,10,15,{{162,60,25,505}},0,thrown(opponent,toMake,60,240,0),throwing(toMake,opponent,45))
 
-	toMake:setThrowboxes({{0,0,162,505}})
-
 	mediumPunch.onFrame[9] = function (self) 
 		added = rect(162+self.c1.x,90+self.c1.y,127,57)  
 		if not self.c1.lookingRight then 
@@ -109,7 +107,7 @@ local function makeTestChar(toMake,opponent)
 	
 	heavyPunch:addHurtbox(60,2,80,88)
 	heavyPunch:addHurtbox(14,91,147,65)
-	heavyPunch:addHurtbox(6,157,165,75)
+	heavyPunch:addHurtbox(6,157,165,75,{"throwable"})
 	heavyPunch:addHurtbox(0,233,170,44)
 	heavyPunch:addHurtbox(4,277,181,24)
 	heavyPunch:addHurtbox(5,302,185,24)
@@ -149,7 +147,7 @@ local function makeTestChar(toMake,opponent)
 	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch},{['MP,r'] = forwardMedium},{['LP,LK'] = throw},{["MP,r,rd,d"] = fireballAttack})
 	standingState:addHurtbox(60,2,80,88)
 	standingState:addHurtbox(14,91,147,65)
-	standingState:addHurtbox(6,157,165,75)
+	standingState:addHurtbox(6,157,165,75,{"throwable"})
 	standingState:addHurtbox(0,233,170,44)
 	standingState:addHurtbox(4,277,181,24)
 	standingState:addHurtbox(5,302,185,24)

@@ -36,17 +36,21 @@ local function doMove(self,xVel,yVel)
 	self.y = self.y+yVel
 	--move all Hurtboxes
 	for k,v in ipairs(self.state.hurtboxes) do
-	v:setX(v.x+xVel)
-	v:setY(v.y+yVel)
+		v:setX(v.x+xVel)
+		v:setY(v.y+yVel)
 	end
 	for k,v in ipairs(self.state.collisionboxes) do
-	v:setX(v.x+xVel)
-	v:setY(v.y+yVel)
+		v:setX(v.x+xVel)
+		v:setY(v.y+yVel)
 	end
 	if self.state.hitboxes then for k,v in ipairs(self.state.hitboxes) do
-	v:setX(v.x+xVel)
-	v:setY(v.y+yVel)
+		v:setX(v.x+xVel)
+		v:setY(v.y+yVel)
 	end end 
+	if self.throwboxes then for k,v in ipairs(self.throwboxes) do 
+		v:setX(v.x+xVel)
+		v:setY(v.y+yVel)
+	end end
 end
 
 
@@ -123,6 +127,7 @@ function char:draw(coord,name)
 	for k,v in ipairs(self.state.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.state.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
+	love.graphics.setColor(255,255,0)
 	if self.state.draw then self.state:draw() end
 end
 
@@ -201,18 +206,28 @@ function char:getHeight()
 	return self:getBottom() - self.y
 end
 
-function char:setThrowboxes(boxes)
-	for k,v in ipairs(boxes) do
-		table.insert(self.throwboxes,rect(v[1],v[2],v[3],v[4]))
-	end
-end
 --inner class hurtbox
 local hurtbox = {}
 setmetatable(hurtbox,hurtbox)
 hurtbox.__index = rect
-function hurtbox:__call(x,y,width,height)
-	return rect(x,y,width,height)
+function hurtbox:__call(x,y,width,height,flags)
+	local nt = rect(x,y,width,height)
+	setmetatable(nt,{__index = hurtbox})
+	if flags then 
+		nt.flags = flags 
+	else 
+		nt.flags = {} 
+	end
+	return nt
 end 
+
+function hurtbox:hasFlag(flag)
+	for k,v in ipairs(self.flags) do
+		if v == flag then return true end
+	end
+	return false
+end
+
 char.hurtbox = hurtbox
 
 return char
