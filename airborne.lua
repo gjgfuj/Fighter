@@ -15,7 +15,7 @@ function airborne:update()
 		if self.fallbackState then self.fallbackState:acquireBoxes() end
 		self:fallback()
 	else
-		self.yVel=self.yVel+3000/60
+		self.yVel=self.yVel+1000/60
 		self.c1:move(self.xVel/60,self.yVel/60,self.c2)
 		--if self.hitboxes then for k,v in ipairs(self.hitboxes) do
 		--	v:setX(v.x+self.xVel)

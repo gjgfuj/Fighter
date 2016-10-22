@@ -102,6 +102,7 @@ function flipBox(box,width,self)-- takes a rect and flips it width refers to the
 end
 
 function char:flip(width)--this one's most likely temporary
+	width = 75
 	self.lookingRight = not self.lookingRight 
 	if not (self.lookingRight and self.back == 'l') or not (not self.lookingRight and self.back == 'r') then
 		local backBuffer = self.back
@@ -169,7 +170,7 @@ function char:setState(toSet)
 	    self:flip(226)
 	end
 	self.state:init()
-	self.state:update()
+	--self.state:update()
 end
 
 function char:setJumpForward(newJf)
