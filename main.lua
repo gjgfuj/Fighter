@@ -19,6 +19,8 @@ local c1
 local c2
 local fps = 0
 local image
+local canvas = love.graphics.newCanvas(640,360)
+
 
 function love.run()
  
@@ -62,6 +64,9 @@ function love.run()
 	 
 			if love.graphics and love.graphics.isActive() then
 				love.graphics.clear(love.graphics.getBackgroundColor())
+				love.graphics.setCanvas(canvas)
+				love.graphics.clear(love.graphics.getBackgroundColor())
+				love.graphics.setCanvas()
 				love.graphics.origin()
 				if love.draw then love.draw() end
 				love.graphics.present()
@@ -223,6 +228,7 @@ local function makeTestChar(toMake,opponent)
 end
 
 function love.load()
+	love.graphics.setDefaultFilter("nearest","nearest",1)
 	image = love.graphics.newImage("Images/Brett.png")
 	love.window.setMode(640,360,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 	local image = love.graphics.newImage("Images/Brett.png")
@@ -246,16 +252,22 @@ function love.load()
 end
 
 function love.draw()
-	love.graphics.scale(1368/640,768/360)
+	love.graphics.setCanvas(canvas)
 	love.graphics.setColor(0,38,153)
-	love.graphics.rectangle("fill",0,900,1920,180)
+	love.graphics.rectangle("fill",0,300,640,60)
 	love.graphics.setColor(255,255,255)
-	love.graphics.print("FPS:"..fps,0,0)
-	c1:draw(500,"c1")
-	c2:draw(1000,"c2")
+	c1:draw(167,"c1")
+	c2:draw(333,"c2")
 	for k,v in ipairs(entities) do
 		v:draw()
 	end
+	love.graphics.setCanvas()
+	love.graphics.push()
+--	love.graphics.scale(2)
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(canvas,0,0,0,3)
+	love.graphics.pop()
+	love.graphics.print("FPS:"..fps,0,0)
 end
 
 function love.update(dt)
