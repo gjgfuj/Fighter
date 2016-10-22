@@ -18,8 +18,6 @@ local thrown = require "thrown"
 local c1
 local c2
 local fps = 0
-local image
-local canvas
 scaleFactor = 1
 
 function love.run()
