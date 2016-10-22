@@ -19,8 +19,8 @@ local c1
 local c2
 local fps = 0
 local image
-local canvas = love.graphics.newCanvas(640,360)
-
+local canvas
+scaleFactor = 1
 
 function love.run()
  
@@ -230,6 +230,7 @@ end
 function love.load()
 	love.graphics.setDefaultFilter("nearest","nearest",1)
 	image = love.graphics.newImage("Images/Brett.png")
+ 	canvas = love.graphics.newCanvas(640,360)
 	love.window.setMode(640,360,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 	local image = love.graphics.newImage("Images/Brett.png")
 	local speed = 167
@@ -252,6 +253,8 @@ function love.load()
 end
 
 function love.draw()
+	print("canvas",canvas:getFilter())
+	print("Image",image:getFilter())
 	love.graphics.setCanvas(canvas)
 	love.graphics.setColor(0,38,153)
 	love.graphics.rectangle("fill",0,300,640,60)
@@ -265,11 +268,13 @@ function love.draw()
 	love.graphics.push()
 --	love.graphics.scale(2)
 	love.graphics.setColor(255,255,255)
-	love.graphics.draw(canvas,0,0,0,3)
+	love.graphics.draw(canvas,0,0,0,scaleFactor)
 	love.graphics.pop()
 	love.graphics.print("FPS:"..fps,0,0)
+	love.graphics.print(canvas:getFilter(),0,50)
 end
 
+local i = 0
 function love.update(dt)
 	--update both characters
 	c1:update(c2)
@@ -288,4 +293,5 @@ function love.update(dt)
 		c2:setState(c2.nextState)
 		c2.nextState = nil
 	end
+	i = i+1
 end

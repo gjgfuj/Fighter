@@ -122,7 +122,6 @@ function char:flip(width)--this one's most likely temporary
 end
 
 function char:draw(coord,name)
-	print(self.image)
 	love.graphics.setColor(255,255,255) -- set color to white
 	love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
 	love.graphics.draw(self.image,self.x,self.y)

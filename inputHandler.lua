@@ -219,7 +219,9 @@ function love.joystickhat(joystick, hat,direction)
 end
 
 function love.keypressed(key)
-	if key == "rctrl" then debug.debug() end
+	if key == "rctrl" then scaleFactor = scaleFactor+1 end
+	if key == "lctrl" then scaleFactor = scaleFactor-1 end
+	if key == "ralt"  then if canvas:getFilter() == "nearest" then canvas:setFilter("linear","linear",1) image:setFilter("linear","linear",1) else canvas:setFilter("nearest","nearest",1) image:setFilter("nearest","nearest",1) end i= 0 end
 	for k,v in ipairs(inputHandlers) do
 		if v.device == "keyboard" then
 			inp = v.mapping[key]
