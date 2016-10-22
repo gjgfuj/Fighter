@@ -1,6 +1,6 @@
 local state = require "state"
 
-local MAP_BOTTOM = 1000
+local MAP_BOTTOM = 333
 local airborne = {}
 
 local isAirborneState = true -- if not otherwise specified all checks of this condition on airborne states should fall back onto this state

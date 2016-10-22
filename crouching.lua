@@ -17,6 +17,7 @@ function crouching:update()
 	    self.c1:flip(226)
 	end
 	if not self:checkInputs() then
+		--return to standing if no down is held
 		if not(self.c1.handler:isHeld('ld') or self.c1.handler:isHeld('d') or self.c1.handler:isHeld('rd')) then
 			self.c1:setState(self.c1.standing)
 		end

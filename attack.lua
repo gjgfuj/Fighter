@@ -65,6 +65,7 @@ function attack:draw()
 end
 
 function attack:copy()
+	--override copy to consider hitboxes
 	local nt = state.copy(self)
 	nt.hitboxes = {}
 	for k,v in pairs(nt.hitboxValues) do
