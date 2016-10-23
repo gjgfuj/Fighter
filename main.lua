@@ -18,7 +18,8 @@ local thrown = require "thrown"
 local c1
 local c2
 local fps = 0
-scaleFactor = 1
+local image
+local canvas
 
 function love.run()
  
@@ -79,10 +80,10 @@ local function makeTestChar(toMake,opponent)
 	toMake.image = image
 	local forwardMedium = attack(toMake,opponent,10,5,20,{{54,30,42,19}},33,10,hitstun(opponent,toMake,60,33),hitstun(opponent,toMake,30,33))--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
 	forwardMedium.inStartup = function (self) local vel = 6 if not self.c1.lookingRight then vel = -vel end   self.c1:move(vel,0,self.c2) end
-	forwardMedium.inRecovery = function (self) local vel = 3 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
+	forwardMedium.inRecovery = function (self) local vel = -3 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 250 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
-	local mediumPunch = attack(toMake,opponent,5,3,10,{{54,30,42,19}},100,10,hitstun(opponent,toMake,60,100),hitstun(opponent,toMake,30,100))
+	local mediumPunch = attack(toMake,opponent,5,3,10,{{54,30,42,19}},100,10,hitstun(opponent,toMake,60,33),hitstun(opponent,toMake,30,33))
 	local heavyPunch = attack(toMake,opponent,8,5,1,{{54,0,42,49}},100,10,knockup(opponent,toMake,0,-1750),hitstun(opponent,toMake,30,500))
 	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,30)
 	
@@ -176,7 +177,7 @@ local function makeTestChar(toMake,opponent)
 	crouchingState:addCollisionbox(0,79,65,56)
 	toMake:setCrouching(crouchingState)
 	
-	local jumpingMP = jumpingAttack(toMake,opponent,0,0,10,6,20,{{162,90,127,57}},100,10,hitstun(opponent,toMake,60,400),hitstun(opponent,toMake,10,400))
+	local jumpingMP = jumpingAttack(toMake,opponent,0,0,10,6,20,{{54,30,42,19}},100,10,hitstun(opponent,toMake,60,133),hitstun(opponent,toMake,10,133))
 	jumpingMP:addHurtbox(20,1,27,29)
 	jumpingMP:addHurtbox(5,30,49,21)
 	jumpingMP:addHurtbox(2,52,55,15,{"throwable"})
@@ -241,8 +242,8 @@ function love.load()
 	local handler2 = inputHandler("keyboard",mapping2)
 	
 	
-	c1 = char(179,200,handler2)
-	c2 = char(322,200,handler)
+	c1 = char(179,198,handler2)
+	c2 = char(322,198,handler)
 	
 	makeTestChar(c1,c2)
 	makeTestChar(c2,c1)
@@ -251,14 +252,12 @@ function love.load()
 end
 
 function love.draw()
-	print("canvas",canvas:getFilter())
-	print("Image",image:getFilter())
 	love.graphics.setCanvas(canvas)
 	love.graphics.setColor(0,38,153)
 	love.graphics.rectangle("fill",0,300,640,60)
 	love.graphics.setColor(255,255,255)
-	c1:draw(167,"c1")
-	c2:draw(333,"c2")
+	c1:draw()
+	c2:draw()
 	for k,v in ipairs(entities) do
 		v:draw()
 	end
@@ -266,10 +265,12 @@ function love.draw()
 	love.graphics.push()
 --	love.graphics.scale(2)
 	love.graphics.setColor(255,255,255)
-	love.graphics.draw(canvas,0,0,0,scaleFactor)
+	local width,height = love.graphics.getDimensions()
+	love.graphics.draw(canvas,0,0,0,width/640,height/360)
 	love.graphics.pop()
 	love.graphics.print("FPS:"..fps,0,0)
-	love.graphics.print(canvas:getFilter(),0,50)
+	love.graphics.print("c1 - x:"..c1.x.." y:"..c1.y,300,0)
+	love.graphics.print("c2 - x:"..c2.x.." y:"..c2.y,700,0)
 end
 
 local i = 0

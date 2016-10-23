@@ -80,7 +80,6 @@ function state:copy()
 	nt.hurtboxes = {}
 	if nt.hurtboxValues then for k,v in ipairs(nt.hurtboxValues) do 
 		table.insert(nt.hurtboxes,char.hurtbox(v[1]+nt.c1.x,v[2]+nt.c1.y,v[3],v[4],v[5]))
-		nt.hurtboxes[#nt.hurtboxes]:hasFlag()
 	end end
 	nt.collisionboxes = {}
 	if nt.collisionboxValues then for k,v in ipairs(nt.collisionboxValues) do

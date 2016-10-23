@@ -28,9 +28,9 @@ function airborne:update()
 				local vmid = self.c1.x + (v.endx - v.x)/2
 				local v2mid = self.c2.x + (v2.endx-v2.x)/2
 				if vmid > v2mid then 
-					self.c1:move(10,0,self.c2,true)
+					self.c1:move(1,0,self.c2,true)
 				else
-					self.c1:move(-10,0,self.c2,true)
+					self.c1:move(-1,0,self.c2,true)
 				end
 			end
 		end

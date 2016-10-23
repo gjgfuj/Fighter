@@ -123,9 +123,11 @@ end
 
 function char:draw(coord,name)
 	love.graphics.setColor(255,255,255) -- set color to white
-	love.graphics.print("x:"..self.x.." y:"..self.y,coord,0)
-	love.graphics.draw(self.image,self.x,self.y)
-	if self.state.word then love.graphics.print(self.state.word,self.x,self.y-50) end
+	if self.lookingRight then 
+		love.graphics.draw(self.image,self.x,self.y)
+	else
+		love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.image:getWidth(),0)
+	end
 	for k,v in ipairs(self.state.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.state.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
@@ -168,10 +170,10 @@ function char:setState(toSet)
 	end
 	if not self.lookingRight then
 		self.lookingRight = true
-	    self:flip(226)
+	    self:flip(75)
 	end
 	self.state:init()
-	--self.state:update()
+	self.state:update()
 end
 
 function char:setJumpForward(newJf)
