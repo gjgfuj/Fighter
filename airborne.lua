@@ -31,8 +31,10 @@ function airborne:update()
 				local v2mid = self.c2.x + (v2.endx-v2.x)/2
 				if vmid > v2mid then 
 					self.c1:move(1,0,self.c2,true)
+					self.c2:move(-1,0,self.c1,true)
 				else
 					self.c1:move(-1,0,self.c2,true)
+					self.c2:move(1,0,self.c1,true)
 				end
 			end
 		end
@@ -58,7 +60,7 @@ function airborne:handleHit(damage,chip,effect)
 	else
 		if not knockup then knockup = require "knockup" end
 		self.c1:doDamage()
-		local knockupEffect = knockup(self.c1,self.c2,0,0,self.c1.standing)
+		local knockupEffect = knockup(self.c1,self.c2,1,0,self.c1.standing)
 		knockupEffect.overwriteVel=true
 		knockupEffect:acquireBoxes()
 		self.c1:setState(knockupEffect)

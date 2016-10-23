@@ -65,7 +65,9 @@ local function checkCollision(self,otherChar,xVel,yVel)
 		for k,v in ipairs(self.state.collisionboxes) do
 			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
 				if(v:collide(v2) and v2.x <= v.x) then
-					return true,(v.x-v2.endx)+1
+					return "player",(v.x-v2.endx)+1
+				elseif v.x <= 0 then
+					return "border",v.x
 				end
 			end
 		end
@@ -73,7 +75,9 @@ local function checkCollision(self,otherChar,xVel,yVel)
 		for k,v in ipairs(self.state.collisionboxes) do
 			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
 				if(v:collide(v2) and v2.endx >= v.endx) then 
-					return true,(v.endx -v2.x)-1
+					return "player",(v.endx -v2.x)-1
+				elseif v.endx >= 640 then
+					return "border",v.endx-640
 				end
 			end
 		end
@@ -81,16 +85,19 @@ local function checkCollision(self,otherChar,xVel,yVel)
 end
 
 function char:move(xVel,yVel,otherChar,ignoreCollision)
-	if(ignoreCollision or not checkCollision(self,otherChar,xVel,yVel)) then
+	local collision,distance = checkCollision(self,otherChar,xVel,yVel) 
+	if (ignoreCollision and not collision=="border") or not collision then
 			doMove(self,xVel,yVel)
-			nowCollide,distance = checkCollision(self,otherChar,xVel,yVel)
-			if not ignoreCollision and nowCollide then
-				doMove(self,-distance,0)
-			end
-	else
+	elseif collision == "player" and not (checkCollision(otherChar,self,xVel,yVel)=="border")  then 
 		doMove(self,xVel/2,yVel,true)
 		otherChar:move(xVel/2,0,self,true)
+	else
+		doMove(self,0,yVel,true)
 	end		
+	local nowCollide,distance = checkCollision(self,otherChar,xVel,yVel)
+	if not ignoreCollision and nowCollide then
+		doMove(self,-distance,0)
+	end
 end
 
 --the two functions below definitely need to be cleaned up
