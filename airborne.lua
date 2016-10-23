@@ -1,22 +1,24 @@
 local state = require "state"
+local knockup
 
 local MAP_BOTTOM = 333
 local airborne = {}
 
-local isAirborneState = true -- if not otherwise specified all checks of this condition on airborne states should fall back onto this state
+airborne.isAirborneState = true -- if not otherwise specified all checks of this condition on airborne states should fall back onto this state
 
 setmetatable(airborne,airborne)
 
 airborne.__index = state
 
 function airborne:update()
+	print(self.yVel)
 	if self.c1:getBottom() and self.yVel >= 0 and self.c1:getBottom() >= MAP_BOTTOM then
 		self.c1:move(0,MAP_BOTTOM-self.c1:getBottom(),self.c2)
-		if self.fallbackState then self.fallbackState:acquireBoxes() end
+		if self.fallbackState and not self.fallbackState.hurtboxValues then self.fallbackState:acquireBoxes() end
 		self:fallback()
 	else
-		self.yVel=self.yVel+1000/60
-		self.c1:move(self.xVel/60,self.yVel/60,self.c2)
+		self.yVel=self.yVel+0.25
+		self.c1:move(self.xVel,self.yVel,self.c2)
 		--if self.hitboxes then for k,v in ipairs(self.hitboxes) do
 		--	v:setX(v.x+self.xVel)
 		--	v:setY(v.y+self.yVel)
@@ -46,6 +48,20 @@ function airborne:setState(toSet)
 		state.setState(self,modifiedState)
 	else
 		state.setState(self,toSet)
+	end
+end
+
+function airborne:handleHit(damage,chip,effect)
+	if(effect.isAirborneState) then
+		self.c1:doDamage(damage)
+		self.c1:setState(effect)
+	else
+		if not knockup then knockup = require "knockup" end
+		self.c1:doDamage()
+		local knockupEffect = knockup(self.c1,self.c2,0,0,self.c1.standing)
+		knockupEffect.overwriteVel=true
+		knockupEffect:acquireBoxes()
+		self.c1:setState(knockupEffect)
 	end
 end
 

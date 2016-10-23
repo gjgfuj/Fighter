@@ -15,11 +15,12 @@ local throw = require "throw"
 local throwing = require "throwing"
 local thrown = require "thrown"
 
+--Characters
 local c1
 local c2
-local fps = 0
-local image
-local canvas
+local fps = 0--Holds the current fps for the fps display
+local image--Holds the Brett sprite for testing
+local canvas--Canvas to draw the game world before scaling it
 
 function love.run()
  
@@ -84,8 +85,9 @@ local function makeTestChar(toMake,opponent)
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
 	fireballAttack.beforeCollisionCheck = function(self) local vel = 250 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
 	local mediumPunch = attack(toMake,opponent,5,3,10,{{54,30,42,19}},100,10,hitstun(opponent,toMake,60,33),hitstun(opponent,toMake,30,33))
-	local heavyPunch = attack(toMake,opponent,8,5,1,{{54,0,42,49}},100,10,knockup(opponent,toMake,0,-1750),hitstun(opponent,toMake,30,500))
+	local heavyPunch = attack(toMake,opponent,8,5,1,{{54,0,42,49}},100,10,knockup(opponent,toMake,4.5,-7),hitstun(opponent,toMake,30,500))
 	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,30)
+	heavyPunch.effect.overwriteVel = true
 	
 	local throw = throw(toMake,opponent,6,10,15,{{54,30,10,105}},0,thrown(opponent,toMake,60,240,0),throwing(toMake,opponent,45))
 
@@ -190,7 +192,7 @@ local function makeTestChar(toMake,opponent)
 	jumpingMP:addCollisionbox(5,30,52,105)
 	jumpingMP:addCollisionbox(20,1,27,29)
 
-	local jumpingState = jumping(toMake,opponent,0,-583,{MP=jumpingMP},{},{},{})
+	local jumpingState = jumping(toMake,opponent,0,-10,{MP=jumpingMP},{},{},{})
 	jumpingState:addHurtbox(20,1,26,29)
 	jumpingState:addHurtbox(5,30,49,21)
 	jumpingState:addHurtbox(2,52,55,15,{"throwable"})
@@ -207,7 +209,7 @@ local function makeTestChar(toMake,opponent)
 	jumpingState:addCollisionbox(20,1,27,29)
 	toMake:setJumping(jumpingState)
 	
-	local jumpingForward = jumping(toMake,opponent,250,-583,{MP=jumpingMP},{},{},{})
+	local jumpingForward = jumping(toMake,opponent,3,-10,{MP=jumpingMP},{},{},{})
 	jumpingForward:addHurtbox(22,49,27,29)
 	jumpingForward:addHurtbox(0,100,65,35)
 	jumpingForward:addHurtbox(0,78,60,21)
@@ -215,7 +217,7 @@ local function makeTestChar(toMake,opponent)
 	jumpingForward:addCollisionbox(0,79,65,56)
 	toMake:setJumpForward(jumpingForward)
 	
-	local jumpingBack = jumping(toMake,opponent,-250,-583,{MP=jumpingMP},{},{},{})
+	local jumpingBack = jumping(toMake,opponent,-3,-10,{MP=jumpingMP},{},{},{})
 	jumpingBack:addHurtbox(22,49,27,29)
 	jumpingBack:addHurtbox(0,100,65,35)
 	jumpingBack:addHurtbox(0,78,60,21)
@@ -223,7 +225,7 @@ local function makeTestChar(toMake,opponent)
 	jumpingBack:addCollisionbox(0,79,65,56)
 	toMake:setJumpBack(jumpingBack)
 	
-	toMake:setKnockupBoxes({{0,(toMake:getBottom()-toMake.y-33),(toMake:getBottom()-toMake.y),33}},{{0,toMake:getBottom()-toMake.y-33,toMake:getBottom()-toMake.y,33}})
+	toMake:setKnockupBoxes({{-((toMake:getBottom()-toMake.y)-image:getWidth()),(toMake:getBottom()-toMake.y-33),(toMake:getBottom()-toMake.y),33}},{{-((toMake:getBottom()-toMake.y)-image:getWidth()),toMake:getBottom()-toMake.y-33,toMake:getBottom()-toMake.y,33}})
 end
 
 function love.load()
