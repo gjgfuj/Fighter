@@ -28,13 +28,20 @@ end
 function hitstun:init()
 	local distance = self.pushback 
 	distance = distance/friction
+	local remainder = 0 --Holds the remainder the attacker must be pushed back by
 	for k,v in ipairs(self.c1.state.collisionboxes) do
 		if self.c2.lookingRight and MAP_WIDTH-v.endx < distance then
-			self.c2:addBonus(sliding(-sliding.calcStartVel((distance-(MAP_WIDTH-v.endx)),friction),friction),self.c1) 
+			local buffer = (distance-(MAP_WIDTH-v.endx)) 
+			if remainder == 0 or buffer > remainder then remainder = buffer end 
 		elseif not self.c2.lookingRight and v.x < distance then
-			self.c2:addBonus(sliding(sliding.calcStartVel(distance-v.x,friction),friction))
+			local buffer = distance-v.x,friction
+			if remainder == 0 or buffer < remainder then remainder = buffer end
+
 		end
 	end
+	local startVel = sliding.calcStartVel(remainder,friction)
+	if self.c2.lookingRight then startVel = -startVel end
+	if remainder ~= 0 then self.c2:addBonus(sliding(startVel,friction)) end
 	--calculate the required starting Velocity to travel the specified distance
 	local startVel = sliding.calcStartVel(distance,friction)
 	if not self.c2.lookingRight then startVel = -startVel end

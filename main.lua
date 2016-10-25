@@ -86,7 +86,7 @@ local function makeTestChar(toMake,opponent)
 	forwardMedium.inStartup = function (self) local vel = 6 if not self.c1.lookingRight then vel = -vel end   self.c1:move(vel,0,self.c2) end
 	forwardMedium.inRecovery = function (self) local vel = -3 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
-	fireballAttack.beforeCollisionCheck = function(self) local vel = 250 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+150,50,50,vel, toMake)) end
+	fireballAttack.beforeCollisionCheck = function(self) local vel = 250 if not self.c1.lookingRight then vel = -vel end table.insert(entities,fireball(self.c2,self.c1.x,self.c1.y+50,17,17,vel, toMake)) end
 	local mediumPunch = attack(toMake,opponent,5,3,10,{{54,30,42,19}},100,10,hitstun(opponent,toMake,60,33),hitstun(opponent,toMake,30,33))
 	local heavyPunch = attack(toMake,opponent,8,5,1,{{54,0,42,49}},100,10,knockup(opponent,toMake,4.5,-7),hitstun(opponent,toMake,30,500))
 	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,30)
@@ -150,7 +150,7 @@ local function makeTestChar(toMake,opponent)
 	fireballAttack:addCollisionbox(5,30,52,105)
 	fireballAttack:addCollisionbox(20,1,27,29)
 	
-	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch,["HK"] = forwardMedium},{['MP,r'] = forwardMedium},{['LP,LK'] = throw},{["MP,r,rd,d"] = fireballAttack})
+	local standingState = standing(toMake,opponent,{['LP'] = slide, ['MP'] = mediumPunch, ["HP"] = heavyPunch,["HK"] = forwardMedium},{['MP,f'] = forwardMedium},{['LP,LK'] = throw},{["MP,f,fd,d"] = fireballAttack})
 	standingState:addHurtbox(20,1,27,29)
 	standingState:addHurtbox(5,30,49,21)
 	standingState:addHurtbox(2,52,55,15,{"throwable"})
@@ -290,7 +290,6 @@ function love.draw()
 	love.graphics.setCanvas()
 	love.graphics.setColor(255,255,255)
 	love.graphics.draw(canvas,0,0,0,width/640,height/360)
-	love.graphics.draw(canvas,0,0,0)
 	love.graphics.print("FPS:"..fps,0,0)
 	love.graphics.print("c1 - x:"..c1.x.." y:"..c1.y,300,0)
 	love.graphics.print("c2 - x:"..c2.x.." y:"..c2.y,700,0)

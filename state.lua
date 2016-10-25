@@ -10,7 +10,7 @@ function state:__index(key)
 end
 
 function state:__call(c1,c2,buttons,combinations,fpcombinations,patternStates)
-	local nt = {c1=c1, c2=c2, buttons=buttons, combinations=combinations, fpcombinations = fpcombinations, patternStates=patternStates,inputsRight = true}
+	local nt = {c1=c1, c2=c2, buttons=buttons, combinations=combinations, fpcombinations = fpcombinations, patternStates=patternStates,inputsRight = true,delay = true}
 	nt.hurtboxes = {}
 	nt.collisionboxes = {}
 	nt.patterns = {}
@@ -20,28 +20,56 @@ function state:__call(c1,c2,buttons,combinations,fpcombinations,patternStates)
 	return nt
 end
 
+--Substitutes 'f' and 'b' (forward and back) in input patterns for their effective meaning depending on character orientation
+function state:chooseDirectionals(input)
+	if self.c1.lookingRight then
+		input = input:gsub('f','r')
+		input = input:gsub('b','l')
+	else
+		input = input:gsub('f','l')
+		input =  input:gsub('b','l')
+	end
+	return input
+end
+
+function state:unchooseDirectionals(input)
+	if self.c1.lookingRight then
+		input = input:gsub('r','f')
+		input =  input:gsub('l','b')
+	else
+		input = input:gsub('l','f')
+		input = input:gsub('r','b')
+	end
+	return input
+end
+
 --TODO: optimize by caching splitString results somewhere,maybe on construction
 function state:checkInputs()
-	if self.__base.inputsRight ~= self.c1.lookingRight then self:turnInputs() end
-	pattern = self.c1.handler:patternRecognition(self.patterns)
+	local buffer = {}
+	for k,v in ipairs(self.patterns) do
+		buffer[k] = self:chooseDirectionals(v)
+	end
+	pattern = self.c1.handler:patternRecognition(buffer)
 	if pattern then
+		pattern = self:unchooseDirectionals(pattern)
 		self.c1:setState(self.patternStates[pattern])
 		return true
 	end
 	for input,result in pairs(self.fpcombinations) do
-		if self.c1.handler:isTapped(unpack(splitString(input,','))) then
+
+		if self.c1.handler:isTapped(unpack(splitString(self:chooseDirectionals(input),','))) then
 			self.c1:setState(result)
 			return true
 		end 
 	end
 	for input,result in pairs(self.combinations) do
-		if self.c1.handler:buttonCombination(unpack(splitString(input,','))) then
+		if self.c1.handler:buttonCombination(unpack(splitString(self:chooseDirectionals(input),','))) then
 			self.c1:setState(result)
 			return true
 		end
 	end
 	for input,result in pairs(self.buttons) do
-		if self.c1.handler:isTapped(input) then
+		if self.c1.handler:isTapped(self:chooseDirectionals(input)) then
 			self.c1:setState(result)
 			return true
 		end
@@ -88,35 +116,8 @@ function state:copy()
 	return nt
 end
 
-local function turnInput(input)
-	input = input:gsub('l','#')
-	input = input:gsub('r','~')
-	input = input:gsub('#','r')
-	return input:gsub('~','l')
-end
-
-local function turnInputsIn(tableToTurn)
-	for k,v in pairs(tableToTurn) do
-		local turnedInput = turnInput(k)
-		tableToTurn[k] = nil
-		tableToTurn[turnedInput] = v
-	end
-end
-
 function state:supplyBoxes()
 	return self.hurtboxValues,self.collisionboxValues 
-end
-
-function state:turnInputs()
-	for k,v in ipairs(self.patterns) do
-		local turnedInput = turnInput(v)
-		local buffer = self.patternStates[v]
-		self.patternStates[v] = nil
-		self.patternStates[turnedInput] = buffer
-		self.patterns[k] = turnedInput
-	end
-	turnInputsIn(self.combinations)
-	self.__base.inputsRight = not self.__base.inputsRight
 end
 
 function state:handleHit(damage,chip,hitEffect) -- the default implementation assumes that the character wasn't able to block

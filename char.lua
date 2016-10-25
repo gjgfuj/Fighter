@@ -122,11 +122,14 @@ end
 function char:flip(width)--this one's most likely temporary
 	width = 75
 	self.lookingRight = not self.lookingRight 
-	if not (self.lookingRight and self.back == 'l') or not (not self.lookingRight and self.back == 'r') then
-		local backBuffer = self.back
-		self.back = self.forward
-		self.forward = backBuffer
+	if self.lookingRight then
+		self.back = 'l'
+		self.forward = 'r'
+	else
+		self.back ='r'
+		self.forward = 'l'
 	end
+
 	self.width = width
 	for k,v in ipairs(self.state.hurtboxes) do 
 		flipBox(v,width,self)
@@ -169,8 +172,7 @@ function char:update(opponent)
 	for k,v in ipairs(self.bonus) do
 		v:update(self,opponent)
 	end
-	
-	love.graphics.setColor(0,255,0)
+	print(self.lookingRight,self.forward,self.back)
 end
 
 function char:queueState(state)
