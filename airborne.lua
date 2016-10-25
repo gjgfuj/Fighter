@@ -11,30 +11,25 @@ setmetatable(airborne,airborne)
 airborne.__index = state
 
 function airborne:update()
-	print(self.yVel)
 	if self.c1:getBottom() and self.yVel >= 0 and self.c1:getBottom() >= MAP_BOTTOM then
 		self.c1:move(0,MAP_BOTTOM-self.c1:getBottom(),self.c2)
 		if self.fallbackState and not self.fallbackState.hurtboxValues then self.fallbackState:acquireBoxes() end
 		self:fallback()
 	else
 		self.yVel=self.yVel+0.25
-		self.c1:move(self.xVel,self.yVel,self.c2)
-		--if self.hitboxes then for k,v in ipairs(self.hitboxes) do
-		--	v:setX(v.x+self.xVel)
-		--	v:setY(v.y+self.yVel)
-		--end end
+		self.c1:move(self.xVel,self.yVel,self.c2,true)
 	end
 	if self.yVel > 0 then for k,v in ipairs(self.collisionboxes) do
 		for k2,v2 in ipairs(self.c2.state.collisionboxes) do
 			if(v:collide(v2)) then
-				local vmid = self.c1.x + (v.endx - v.x)/2
-				local v2mid = self.c2.x + (v2.endx-v2.x)/2
-				if vmid > v2mid then 
-					self.c1:move(1,0,self.c2,true)
-					self.c2:move(-1,0,self.c1,true)
+				local vmid = v.x + (v.endx - v.x)/2
+				local v2mid = v2.x + (v2.endx-v2.x)/2
+				if vmid >= v2mid then 
+					self.c1:move(2,0,self.c2,true)
+					self.c2:move(-2,0,self.c1,true)
 				else
-					self.c1:move(-1,0,self.c2,true)
-					self.c2:move(1,0,self.c1,true)
+					self.c1:move(-2,0,self.c2,true)
+					self.c2:move(2,0,self.c1,true)
 				end
 			end
 		end

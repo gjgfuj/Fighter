@@ -4,6 +4,10 @@ local sliding = {}
 
 setmetatable(sliding,sliding)
 
+function sliding.calcStartVel(distance,friction)
+	return (-0.5+math.sqrt(0.25+2*distance))*friction
+end
+
 function sliding:__call(xVel,friction)
 	local nt = {xVel = xVel,friction = friction}
 	nt.xVelPositive = nt.xVel > 0

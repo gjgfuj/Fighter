@@ -1,5 +1,6 @@
 local state = require "state"
 local sliding = require "sliding"
+local camera = require "camera"
 
 local friction = 0.5
 local hitstun = {}
@@ -27,8 +28,15 @@ end
 function hitstun:init()
 	local distance = self.pushback 
 	distance = distance/friction
+	for k,v in ipairs(self.c1.state.collisionboxes) do
+		if self.c2.lookingRight and MAP_WIDTH-v.endx < distance then
+			self.c2:addBonus(sliding(-sliding.calcStartVel((distance-(MAP_WIDTH-v.endx)),friction),friction),self.c1) 
+		elseif not self.c2.lookingRight and v.x < distance then
+			self.c2:addBonus(sliding(sliding.calcStartVel(distance-v.x,friction),friction))
+		end
+	end
 	--calculate the required starting Velocity to travel the specified distance
-	local startVel = (-0.5+math.sqrt(0.25+2*distance))*friction
+	local startVel = sliding.calcStartVel(distance,friction)
 	if not self.c2.lookingRight then startVel = -startVel end
 	self.c1:addBonus(sliding(startVel,friction),self.c2)
 end

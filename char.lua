@@ -1,5 +1,7 @@
 local rect = require("rect")
+local camera = require("camera")
 
+local playCamera = camera()
 local rotation = 0;
 local char = {}
 setmetatable(char,char)
@@ -30,7 +32,17 @@ function char:addCollisionbox(hx,hy,width,height)
 	-- Probably refactor since these two functions are same
 end
 
-local function doMove(self,xVel,yVel)
+function char:ensureMapLimits()
+	for k,v in ipairs(self.state.collisionboxes) do
+		if v.x < playCamera.x then
+			self:__doMove(playCamera.x-v.x,0)
+		elseif v.endx > playCamera.x+640 then
+			self:__doMove((playCamera.x+640)-v.endx,0)
+		end
+	end
+end
+
+function char:__doMove(xVel,yVel)
 	 --change character coordinates
 	self.x = self.x+xVel
 	self.y = self.y+yVel
@@ -47,10 +59,9 @@ local function doMove(self,xVel,yVel)
 		v:setX(v.x+xVel)
 		v:setY(v.y+yVel)
 	end end 
-	if self.throwboxes then for k,v in ipairs(self.throwboxes) do 
-		v:setX(v.x+xVel)
-		v:setY(v.y+yVel)
-	end end
+	--Make sure the character did not step outside the map borders
+	--if he did,move him back inside
+	self:ensureMapLimits()
 end
 
 
@@ -64,20 +75,20 @@ local function checkCollision(self,otherChar,xVel,yVel)
 	if xVel < 0 then -- when moving to the left
 		for k,v in ipairs(self.state.collisionboxes) do
 			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
-				if(v:collide(v2) and v2.x <= v.x) then
+				if v.x <= playCamera.x then
+					return "border",playCamera.x - v.x
+				elseif(v:collide(v2) and v2.x <= v.x) then
 					return "player",(v.x-v2.endx)+1
-				elseif v.x <= 0 then
-					return "border",v.x
 				end
 			end
 		end
 	elseif xVel > 0 then --when moving to the right
 		for k,v in ipairs(self.state.collisionboxes) do
 			for k2,v2 in ipairs (otherChar.state.collisionboxes) do
-				if(v:collide(v2) and v2.endx >= v.endx) then 
+				if v.endx >= playCamera.x + 640 then	
+					return "border",(playCamera.x+640)-v.endx
+				elseif(v:collide(v2) and v2.endx >= v.endx) then
 					return "player",(v.endx -v2.x)-1
-				elseif v.endx >= 640 then
-					return "border",v.endx-640
 				end
 			end
 		end
@@ -87,16 +98,16 @@ end
 function char:move(xVel,yVel,otherChar,ignoreCollision)
 	local collision,distance = checkCollision(self,otherChar,xVel,yVel) 
 	if (ignoreCollision and not collision=="border") or not collision then
-			doMove(self,xVel,yVel)
+			self:__doMove(xVel,yVel)
 	elseif collision == "player" and not (checkCollision(otherChar,self,xVel,yVel)=="border")  then 
-		doMove(self,xVel/2,yVel,true)
 		otherChar:move(xVel/2,0,self,true)
+		self:__doMove(xVel/2,yVel)
 	else
-		doMove(self,0,yVel,true)
+		self:__doMove(0,yVel)
 	end		
 	local nowCollide,distance = checkCollision(self,otherChar,xVel,yVel)
 	if not ignoreCollision and nowCollide then
-		doMove(self,-distance,0)
+		self:__doMove(-distance,0)
 	end
 end
 
@@ -126,6 +137,7 @@ function char:flip(width)--this one's most likely temporary
 	if self.state.hitboxes then for k,v in ipairs(self.state.hitboxes) do
 		flipBox(v,width,self)
 	end end
+	self:ensureMapLimits()
 end
 
 function char:draw(coord,name)
@@ -181,6 +193,7 @@ function char:setState(toSet)
 	end
 	self.state:init()
 	self.state:update()
+	self:ensureMapLimits()
 end
 
 function char:setJumpForward(newJf)

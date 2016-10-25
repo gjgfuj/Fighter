@@ -14,6 +14,7 @@ local jumpingAttack = require "jumpingAttack"
 local throw = require "throw"
 local throwing = require "throwing"
 local thrown = require "thrown"
+local camera = require "camera"
 
 --Characters
 local c1
@@ -21,6 +22,8 @@ local c2
 local fps = 0--Holds the current fps for the fps display
 local image--Holds the Brett sprite for testing
 local canvas--Canvas to draw the game world before scaling it
+local background = love.graphics.newCanvas(5200,360)
+local playCamera
 
 function love.run()
  
@@ -165,14 +168,14 @@ local function makeTestChar(toMake,opponent)
 	toMake:setstanding(standingState)
 	
 	crouchingMP = attack(toMake,opponent,5,3,10,{{65,80,42,19}})
-	crouchingMP:addHurtbox(22,49,27,29)
+	crouchingMP:addHurtbox(22,49,28,29)
 	crouchingMP:addHurtbox(0,100,65,35)
 	crouchingMP:addHurtbox(0,78,60,21)
 	crouchingMP:addCollisionbox(22,49,28,29)
 	crouchingMP:addCollisionbox(0,79,65,56)
 	
 	local crouchingState = crouching(toMake,opponent,{MP = crouchingMP},{},{},{})
-	crouchingState:addHurtbox(22,49,27,29)
+	crouchingState:addHurtbox(22,49,28,29)
 	crouchingState:addHurtbox(0,100,65,35)
 	crouchingState:addHurtbox(0,78,60,21)
 	crouchingState:addCollisionbox(22,49,28,29)
@@ -193,7 +196,7 @@ local function makeTestChar(toMake,opponent)
 	jumpingMP:addCollisionbox(20,1,27,29)
 
 	local jumpingState = jumping(toMake,opponent,0,-10,{MP=jumpingMP},{},{},{})
-	jumpingState:addHurtbox(20,1,26,29)
+	jumpingState:addHurtbox(20,1,27,29)
 	jumpingState:addHurtbox(5,30,49,21)
 	jumpingState:addHurtbox(2,52,55,15,{"throwable"})
 	jumpingState:addHurtbox(0,78,56,14)
@@ -210,7 +213,7 @@ local function makeTestChar(toMake,opponent)
 	toMake:setJumping(jumpingState)
 	
 	local jumpingForward = jumping(toMake,opponent,3,-10,{MP=jumpingMP},{},{},{})
-	jumpingForward:addHurtbox(22,49,27,29)
+	jumpingForward:addHurtbox(22,49,28,29)
 	jumpingForward:addHurtbox(0,100,65,35)
 	jumpingForward:addHurtbox(0,78,60,21)
 	jumpingForward:addCollisionbox(22,49,28,29)
@@ -218,7 +221,7 @@ local function makeTestChar(toMake,opponent)
 	toMake:setJumpForward(jumpingForward)
 	
 	local jumpingBack = jumping(toMake,opponent,-3,-10,{MP=jumpingMP},{},{},{})
-	jumpingBack:addHurtbox(22,49,27,29)
+	jumpingBack:addHurtbox(22,49,28,29)
 	jumpingBack:addHurtbox(0,100,65,35)
 	jumpingBack:addHurtbox(0,78,60,21)
 	jumpingBack:addCollisionbox(22,49,28,29)
@@ -244,39 +247,60 @@ function love.load()
 	local handler2 = inputHandler("keyboard",mapping2)
 	
 	
-	c1 = char(179,198,handler2)
-	c2 = char(322,198,handler)
+	c1 = char(825,198,handler2)
+	c2 = char(1020,198,handler)
 	
+	playCamera = camera()
+	playCamera:init(c1,c2)
+
 	makeTestChar(c1,c2)
 	makeTestChar(c2,c1)
 	
+	love.graphics.setCanvas(background)
+	love.graphics.setColor(255,255,255)
+	local i = 0
+	while i < 5200 do
+		local j = 0
+		while j < 360 do
+			love.graphics.rectangle("line",i,j,100,100)
+			j = j + 100
+		end
+		i = i+100
+	end
+	love.graphics.setCanvas()
 	love.graphics.setBackgroundColor(0,53,255)
 end
 
 function love.draw()
+	love.graphics.setColor(0,0,0)
+	local width,height = love.graphics.getDimensions()
 	love.graphics.setCanvas(canvas)
-	love.graphics.setColor(0,38,153)
-	love.graphics.rectangle("fill",0,300,640,60)
+	love.graphics.push()
+	playCamera:applyTransformations()
+	love.graphics.draw(background,0,0)
 	love.graphics.setColor(255,255,255)
+	love.graphics.setColor(0,38,153)
+	love.graphics.rectangle("fill",0,290,3200,360)
 	c1:draw()
 	c2:draw()
 	for k,v in ipairs(entities) do
 		v:draw()
 	end
-	love.graphics.setCanvas()
-	love.graphics.push()
---	love.graphics.scale(2)
-	love.graphics.setColor(255,255,255)
-	local width,height = love.graphics.getDimensions()
-	love.graphics.draw(canvas,0,0,0,width/640,height/360)
 	love.graphics.pop()
+	love.graphics.setCanvas()
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(canvas,0,0,0,width/640,height/360)
+	love.graphics.draw(canvas,0,0,0)
 	love.graphics.print("FPS:"..fps,0,0)
 	love.graphics.print("c1 - x:"..c1.x.." y:"..c1.y,300,0)
 	love.graphics.print("c2 - x:"..c2.x.." y:"..c2.y,700,0)
+	love.graphics.print("Camera:"..playCamera.x,0,100)
+	love.graphics.print("Offset:"..playCamera.offset,0,150)
 end
 
 local i = 0
 function love.update(dt)
+	playCamera:update()
 	--update both characters
 	c1:update(c2)
 	c2:update(c1)
