@@ -29,6 +29,7 @@ function throw:activeFrames()
 end
 
 function throw:resolveHit()
+	distributeEvents("Throw",self.c1,self.c2)
 	self.c2:queueState(self.effect)
 	self.c1:setState(self.execution)
 end

@@ -35,7 +35,7 @@ function hitstun:init()
 			if remainder == 0 or buffer > remainder then remainder = buffer end 
 		elseif not self.c2.lookingRight and v.x < distance then
 			local buffer = distance-v.x,friction
-			if remainder == 0 or buffer < remainder then remainder = buffer end
+			if remainder == 0 or buffer > remainder then remainder = buffer end
 
 		end
 	end

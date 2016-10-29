@@ -121,6 +121,7 @@ function state:supplyBoxes()
 end
 
 function state:handleHit(damage,chip,hitEffect) -- the default implementation assumes that the character wasn't able to block
+	distributeEvents("directHit",self.c2,self.c1,damage)
 	self.c1:doDamage(damage)
 	self.c1:queueState(hitEffect)
 end

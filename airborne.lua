@@ -12,6 +12,7 @@ airborne.__index = state
 
 function airborne:update()
 	if self.c1:getBottom() and self.yVel >= 0 and self.c1:getBottom() >= MAP_BOTTOM then
+		distributeEvents("FloorFall",self.c1,self.c2)
 		self.c1:move(0,MAP_BOTTOM-self.c1:getBottom(),self.c2)
 		if self.fallbackState and not self.fallbackState.hurtboxValues then self.fallbackState:acquireBoxes() end
 		self:fallback()
@@ -49,6 +50,7 @@ function airborne:setState(toSet)
 end
 
 function airborne:handleHit(damage,chip,effect)
+	distributeEvents("Hit",self.c2,self.c1)
 	if(effect.isAirborneState) then
 		self.c1:doDamage(damage)
 		self.c1:setState(effect)

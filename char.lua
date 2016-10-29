@@ -9,7 +9,7 @@ function char:__index(key)
 	return rawget(char,key)
 end
 function char:__call(nx,ny,handler)
-	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}, knockupHurtboxes = {}, knockupCollisionboxes = {},throwboxes = {}}
+	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}, knockupHurtboxes = {}, knockupCollisionboxes = {},throwboxes = {},health = 1000}
 	setmetatable(c,char)
 	return c
 end
@@ -172,7 +172,6 @@ function char:update(opponent)
 	for k,v in ipairs(self.bonus) do
 		v:update(self,opponent)
 	end
-	print(self.lookingRight,self.forward,self.back)
 end
 
 function char:queueState(state)
@@ -216,6 +215,8 @@ end
 
 function char:doDamage(damage)
 	--TODO
+	self.health = self.health - damage
+	distributeEvents("damageReceived",self.c1,damage)
 end
 
 function char:addBonus(b,ch2)

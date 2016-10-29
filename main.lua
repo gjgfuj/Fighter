@@ -15,6 +15,10 @@ local throw = require "throw"
 local throwing = require "throwing"
 local thrown = require "thrown"
 local camera = require "camera"
+local gui = require "gui"
+local healthBar = require "healthBar"
+local timer = require "timer"
+require "eventSubject"
 
 --Characters
 local c1
@@ -24,6 +28,7 @@ local image--Holds the Brett sprite for testing
 local canvas--Canvas to draw the game world before scaling it
 local background = love.graphics.newCanvas(5200,360)
 local playCamera
+local activeGUI
 
 function love.run()
  
@@ -257,7 +262,11 @@ function love.load()
 	makeTestChar(c2,c1)
 	
 	love.graphics.setCanvas(background)
-	love.graphics.setColor(255,255,255)
+	love.graphics.setColor(0,0,0)
+	activeGUI = gui()
+	activeGUI:addElement(healthBar(c1,25,25,"left"))
+	activeGUI:addElement(healthBar(c2,395,25,"right"))
+	activeGUI:addElement(timer(308,25,25,25,90))
 	local i = 0
 	while i < 5200 do
 		local j = 0
@@ -272,7 +281,7 @@ function love.load()
 end
 
 function love.draw()
-	love.graphics.setColor(0,0,0)
+	love.graphics.setColor(255,255,255)
 	local width,height = love.graphics.getDimensions()
 	love.graphics.setCanvas(canvas)
 	love.graphics.push()
@@ -280,7 +289,7 @@ function love.draw()
 	love.graphics.draw(background,0,0)
 	love.graphics.setColor(255,255,255)
 	love.graphics.setColor(0,38,153)
-	love.graphics.rectangle("fill",0,290,3200,360)
+	love.graphics.rectangle("fill",0,299,3200,360)
 	c1:draw()
 	c2:draw()
 	for k,v in ipairs(entities) do
@@ -290,6 +299,8 @@ function love.draw()
 	love.graphics.setCanvas()
 	love.graphics.setColor(255,255,255)
 	love.graphics.draw(canvas,0,0,0,width/640,height/360)
+	activeGUI:draw(width/640,height/360)
+	love.graphics.setColor(255,255,255)
 	love.graphics.print("FPS:"..fps,0,0)
 	love.graphics.print("c1 - x:"..c1.x.." y:"..c1.y,300,0)
 	love.graphics.print("c2 - x:"..c2.x.." y:"..c2.y,700,0)
@@ -297,7 +308,6 @@ function love.draw()
 	love.graphics.print("Offset:"..playCamera.offset,0,150)
 end
 
-local i = 0
 function love.update(dt)
 	playCamera:update()
 	--update both characters
@@ -317,5 +327,5 @@ function love.update(dt)
 		c2:setState(c2.nextState)
 		c2.nextState = nil
 	end
-	i = i+1
+	activeGUI:update()
 end
