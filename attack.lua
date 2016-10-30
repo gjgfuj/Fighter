@@ -11,6 +11,10 @@ end
 
 function attack:__call(ch1,ch2,s,a,r,hitb,damage,chip,effect,blockEffect)
 	local nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, damage = damage,chip = chip,effect = effect,blockEffect = blockEffect,inputsRight = true}
+	nt.buttons = {}
+	nt.combinations = {}
+	nt.fpcombinations = {}
+	nt.patternStates = {}
 	if hitb then nt.hitboxValues = hitb end
 	setmetatable(nt,attack)
 	return nt 

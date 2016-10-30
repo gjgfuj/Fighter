@@ -12,12 +12,8 @@ function standing:__call(character1, character2,buttons,combinations,fpcombinati
 	return nt
 end
 
-function standing:update()
-	if(self.c1.x < self.c2.x ~= self.c1.lookingRight) then
-	    self.c1:flip(226)
-	end
-
-	if not self:checkInputs() then 
+function standing:checkInputs()
+	if not state.checkInputs(self) then 
 		if self.c1.handler:isHeld('l') then 
 			self.c1:move(-4,0,self.c2)  -- horizontal movement
 		elseif self.c1.handler:isHeld('r') then 
@@ -32,6 +28,13 @@ function standing:update()
 			self.c1:setState(self.c1.jumpBack)
 		end
 	end
+end
+
+function standing:update()
+	if(self.c1.x < self.c2.x ~= self.c1.lookingRight) then
+	    self.c1:flip(226)
+	end
+	self:checkInputs()
 end
 
 function standing:handleHit(damage,chip,hitEffect,blockEffect,level)

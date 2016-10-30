@@ -16,7 +16,7 @@ end
 
 function char:setstanding(newstanding)
 	self.standing = newstanding
-	self:setState(self.standing)
+	self.state = self.standing:copy()
 end
 
 function char:setCrouching(newCrouching)
@@ -193,7 +193,7 @@ function char:setState(toSet)
 	    self:flip(75)
 	end
 	self.state:init()
-	self.state:update()
+	self.state:checkInputs()
 	self:ensureMapLimits()
 end
 
@@ -214,9 +214,12 @@ function char:handleHit(damage,chip,hitEffect,blockEffect)
 end
 
 function char:doDamage(damage)
-	--TODO
 	self.health = self.health - damage
 	distributeEvents("damageReceived",self.c1,damage)
+	--TODO replace this behaviour to allow more dynamic results ,e.g rounds
+	if self.health <= 0 then
+		startGame()
+	end
 end
 
 function char:addBonus(b,ch2)

@@ -20,6 +20,11 @@ function camera:init(c1,c2)
 	instance.c2 = c2
 end
 
+function camera:reset()
+	self.x = 640
+	self.offset = 0
+end
+
 local function calculateMiddle(self)
 	local distance
 	if self.c1.lookingRight then

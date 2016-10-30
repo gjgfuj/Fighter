@@ -14,6 +14,10 @@ function state:__call(c1,c2,buttons,combinations,fpcombinations,patternStates)
 	nt.hurtboxes = {}
 	nt.collisionboxes = {}
 	nt.patterns = {}
+	if not nt.buttons then nt.buttons = {} end
+	if not nt.combinations then nt.combinations = {} end
+	if not nt.fpcombinations then nt.fpcombinations = {} end
+	if not nt.patternStates then nt.patternStates = {} end
 	for k,v in pairs(patternStates) do
 		table.insert(nt.patterns,k)
 	end

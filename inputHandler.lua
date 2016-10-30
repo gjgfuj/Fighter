@@ -219,6 +219,7 @@ function love.joystickhat(joystick, hat,direction)
 end
 
 function love.keypressed(key)
+	if key == "p" then startGame() end
 	for k,v in ipairs(inputHandlers) do
 		if v.device == "keyboard" then
 			inp = v.mapping[key]

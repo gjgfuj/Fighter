@@ -23,6 +23,8 @@ require "eventSubject"
 --Characters
 local c1
 local c2
+local handler
+local handler2
 local fps = 0--Holds the current fps for the fps display
 local image--Holds the Brett sprite for testing
 local canvas--Canvas to draw the game world before scaling it
@@ -246,16 +248,21 @@ function love.load()
 	
 	entities = {}
 	
-	local mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", triggerright = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
-	local mapping2 = {a = 'l' ,d = 'r',w = 'u',s = 'd', f = 'LP', g = 'MP',h= 'HP', c = 'LK', v = 'MK', b = 'HK'}
-	local handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
-	local handler2 = inputHandler("keyboard",mapping2)
+	mapping = {l = 'l',r = 'r',d = 'd', u = 'u', rd = "rd",ru = "ru", ld = "ld", lu = "lu", a = "LK", b = "MK", triggerright = "HK", x = "LP", y = "MP", rightshoulder = "HP"}
+	mapping2 = {a = 'l' ,d = 'r',w = 'u',s = 'd', f = 'LP', g = 'MP',h= 'HP', c = 'LK', v = 'MK', b = 'HK'}
+	handler = inputHandler(love.joystick.getJoysticks()[1],mapping)
+	handler2 = inputHandler("keyboard",mapping2)
 	
-	
+	startGame()
+end
+
+function startGame()
+	playCamera = camera()
+	playCamera:reset()
+
 	c1 = char(825,198,handler2)
 	c2 = char(1020,198,handler)
 	
-	playCamera = camera()
 	playCamera:init(c1,c2)
 
 	makeTestChar(c1,c2)
@@ -301,7 +308,7 @@ function love.draw()
 	love.graphics.draw(canvas,0,0,0,width/640,height/360)
 	activeGUI:draw(width/640,height/360)
 	love.graphics.setColor(255,255,255)
-	love.graphics.print("FPS:"..fps,0,0)
+	love.graphics.print("FPS:"..math.floor(fps),0,0)
 	love.graphics.print("c1 - x:"..c1.x.." y:"..c1.y,300,0)
 	love.graphics.print("c2 - x:"..c2.x.." y:"..c2.y,700,0)
 	love.graphics.print("Camera:"..playCamera.x,0,100)
