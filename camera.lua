@@ -52,8 +52,12 @@ function camera:update()
 	self.offset = (self.x+320) -mid
 end
 
-function camera:applyTransformations()
-	love.graphics.translate(-self.x,0)
+function camera:applyTransformations(scaleX,scaleY)
+	local xTrans = self.x
+	if scaleX then
+		xTrans = xTrans*scaleX
+	end
+	love.graphics.translate(-xTrans,0)
 end
 
 return camera

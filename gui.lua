@@ -29,5 +29,20 @@ function gui:draw(scaleX,scaleY)
 	end
 end
 
+function gui:drawFrontLayer(scaleX,scaleY)
+	for k,v in ipairs (self.elements) do
+		if v.front then
+			v:draw(scaleX,scaleY)
+		end
+	end
+end
+
+function gui:drawBackLayer(scaleX,scaleY)
+	for k,v in ipairs(self.elements) do
+		if not v.front then
+			v:draw(scaleX,scaleY)
+		end
+	end
+end
 
 return gui
