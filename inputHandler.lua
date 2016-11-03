@@ -110,19 +110,6 @@ function inputHandler:update()
 	--check on analogue Triggers
 end
 
-function inputHandler:checkAxis(axis)
-	if self.device.isGamepad and self.device:isGamepad() then
-		if self.device:getGamepadAxis(love.GamepadAxis[axis]) >= 0 then
-			if self.mapping(axis) then 
-				table.insert(self.inputList,self.mapping[axis])
-				v.held[v.mapping[axis]]= true
-			else
-				v.held[v.mapping[axis]]= false
-			end
-		end
-	end
-end
-
 function inputHandler:isTapped(...)
 	--local index
 	--for k,v in invertIpairs(self.inputList) do
@@ -184,7 +171,7 @@ function inputHandler:multiTap(input,amount,period)
 	return false
 end
 
-function love.gamepadpressed(joystick, button)
+function inputHandler.gamepadpressed(joystick, button)
 	for k,v in ipairs(inputHandlers) do --since the callback function can't be called on an object we need to manually check if it is relevant to any instance of inputHandler
 		if(v.device == joystick) then --check if the device registered with the input handler is this specific joystick 
 			if not string.find(button, "^dp") then --recognize whether the input is a dpad input
@@ -197,7 +184,7 @@ function love.gamepadpressed(joystick, button)
 	end
 end
 
-function love.gamepadreleased(joystick, button)
+function inputHandler.gamepadreleased(joystick, button)
 	for k,v in ipairs(inputHandlers) do
 		if(v.device == joystick) then
 			if not string.find(button, "^dp") then
@@ -207,7 +194,7 @@ function love.gamepadreleased(joystick, button)
 	end
 end
 
-function love.joystickhat(joystick, hat,direction)
+function inputHandler.joystickhat(joystick, hat,direction)
 	for k,v in ipairs(inputHandlers) do
 		if(v.device == joystick) then 
 			if v.mapping[direction] then table.insert(v.inputList,inputHandler.input(v.mapping[direction])) end
@@ -218,7 +205,7 @@ function love.joystickhat(joystick, hat,direction)
 	end
 end
 
-function love.keypressed(key)
+function inputHandler.keypressed(key)
 	if key == "p" then startGame() end
 	for k,v in ipairs(inputHandlers) do
 		if v.device == "keyboard" then
@@ -251,7 +238,7 @@ function love.keypressed(key)
 	end
 end
 
-function love.keyreleased(key)
+function inputHandler.keyreleased(key)
 	for k,v in ipairs(inputHandlers) do
 		if v.device == "keyboard" then 
 			inp = v.mapping[key]
@@ -294,7 +281,7 @@ function love.keyreleased(key)
 	end
 end
 
-function love.gamepadaxis(joystick,axis,value)
+function inputHandler.gamepadaxis(joystick,axis,value)
 	for k,v in ipairs(inputHandlers) do
 		if(v.device == joystick) then 
 			if(value >= 1 and v.mapping[axis]) then
