@@ -15,7 +15,7 @@ function timer:update()
 	if self.framesThisSecond == 60 then --Count ingame-time by frames passed
 		self.seconds = self.seconds - 1
 		self.framesThisSecond = 0
-		if self.seconds <= 0 then switchGamestate(require "startGameState") end --TODO replace with evaluation
+		if self.seconds <= 0 then switchGamestate(require "startGamestate") end --TODO replace with evaluation
 	end
 end
 

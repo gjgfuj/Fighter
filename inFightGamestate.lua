@@ -236,20 +236,17 @@ function startGame()
 end
 
 function inFightGamestate.draw()
-	--Clear the screen
-	love.graphics.clear(0,53,255)
 	love.graphics.setColor(255,255,255)
 
 	--Update Window dimensions
 	local width,height = love.graphics.getDimensions()
 
-	--draw the character layer
+	--Prepare the character layer
 	love.graphics.setCanvas(canvas)
 	love.graphics.clear()
 	love.graphics.push()
 	playCamera:applyTransformations()
-	love.graphics.setColor(255,255,255)
-	love.graphics.setColor(0,38,153)
+	love.graphics.setColor(0,10,150)
 	love.graphics.rectangle("fill",0,299,3200,360)
 	c1:draw()
 	c2:draw()
