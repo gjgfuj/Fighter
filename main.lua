@@ -1,4 +1,4 @@
-local activeGameState = require "startGameState"
+local activeGameState = require "startGamestate"
 
 function love.run()
 	if love.math then
@@ -40,9 +40,6 @@ function love.run()
 			if love.graphics and love.graphics.isActive() then
 				love.graphics.setBackgroundColor(0,0,255)
 				love.graphics.clear(love.graphics.getBackgroundColor())
-				love.graphics.setCanvas(canvas)
-				love.graphics.clear()
-				love.graphics.setCanvas()
 				love.graphics.origin()
 				if love.draw then love.draw() end
 				love.graphics.present()

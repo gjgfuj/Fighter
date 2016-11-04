@@ -218,7 +218,7 @@ function char:doDamage(damage)
 	distributeEvents("damageReceived",self.c1,damage)
 	--TODO replace this behaviour to allow more dynamic results ,e.g rounds
 	if self.health <= 0 then
-		switchGamestate(require "startGameState")
+		switchGamestate(require "startGamestate")
 	end
 end
 
