@@ -10,7 +10,7 @@ function attack:__index(key)
 end
 
 function attack:__call(ch1,ch2,s,a,r,hitb,damage,chip,effect,blockEffect)
-	local nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, damage = damage,chip = chip,effect = effect,blockEffect = blockEffect,inputsRight = true}
+	local nt = {c1 = ch1, c2 = ch2, startup = s, active = a, recovery = r, frames_passed = 0, onFrame = {},patterns = {}, fpcombinations = {}, combinations = {}, damage = damage,chip = chip,effect = effect,blockEffect = blockEffect,inputsRight = true,pushback = 100}
 	nt.buttons = {}
 	nt.combinations = {}
 	nt.fpcombinations = {}
@@ -66,6 +66,29 @@ function attack:draw()
 			love.graphics.rectangle("line",v.x,v.y,v.width,v.height)
 		end
 	end
+end
+
+function attack:applyPushback()
+	local distance = self.pushback 
+	distance = distance/friction
+	local remainder = 0 --Holds the remainder the attacker must be pushed back by
+	for k,v in ipairs(self.c2.state.collisionboxes) do
+		if self.c1.lookingRight and MAP_WIDTH-v.endx < distance then
+			local buffer = (distance-(MAP_WIDTH-v.endx)) 
+			if remainder == 0 or buffer > remainder then remainder = buffer end 
+		elseif not self.c1.lookingRight and v.x < distance then
+			local buffer = distance-v.x,friction
+			if remainder == 0 or buffer > remainder then remainder = buffer end
+
+		end
+	end
+	local startVel = sliding.calcStartVel(remainder,friction)
+	if self.c1.lookingRight then startVel = -startVel end
+	if remainder ~= 0 then self.c1:addBonus(sliding(startVel,friction)) end
+	--calculate the required starting Velocity to travel the specified distance
+	local startVel = sliding.calcStartVel(distance,friction)
+	if not self.c1.lookingRight then startVel = -startVel end
+	self.c2:addBonus(sliding(startVel,friction),self.c1)
 end
 
 function attack:copy()

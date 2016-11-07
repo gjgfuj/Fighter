@@ -45,7 +45,7 @@ function hitstun:init()
 	--calculate the required starting Velocity to travel the specified distance
 	local startVel = sliding.calcStartVel(distance,friction)
 	if not self.c2.lookingRight then startVel = -startVel end
-	self.c1:addBonus(sliding(startVel,friction),self.c2)
+	self.c1:addBonus(sliding(startVel,friction,10),self.c2)
 end
 
 return hitstun

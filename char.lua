@@ -145,11 +145,11 @@ end
 
 function char:draw(coord,name)
 	love.graphics.setColor(255,255,255) -- set color to white
-	if self.lookingRight then 
+--[[	if self.lookingRight then 
 		love.graphics.draw(self.image,self.x,self.y)
 	else
 		love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.image:getWidth(),0)
-	end
+	end]]
 	for k,v in ipairs(self.state.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.state.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging

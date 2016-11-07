@@ -12,12 +12,21 @@ function standing:__call(character1, character2,buttons,combinations,fpcombinati
 	return nt
 end
 
+--Turns the given value around according the way the character is facing
+local function turnValue(self,value)
+	if not self.c1.lookingRight then
+		return -value
+	else
+		return value
+	end
+end
+
 function standing:checkInputs()
 	if not state.checkInputs(self) then 
-		if self.c1.handler:isHeld('l') then 
-			self.c1:move(-4,0,self.c2)  -- horizontal movement
-		elseif self.c1.handler:isHeld('r') then 
-			self.c1:move(4,0,self.c2)  -- horizontal movement
+		if self.c1.handler:isHeld(self.c1.back) then 
+			self.c1:move(-turnValue(self,2),0,self.c2)  -- horizontal movement
+		elseif self.c1.handler:isHeld(self.c1.forward) then 
+			self.c1:move(turnValue(self,4),0,self.c2)  -- horizontal movement
 		elseif self.c1.handler:isHeld('d') or self.c1.handler:isHeld('ld') or self.c1.handler:isHeld('rd') then
 			self.c1:setState(self.c1.crouching)
 		elseif self.c1.handler:isHeld('u') then

@@ -90,8 +90,7 @@ end
 
 function state:addCollisionbox(hx,hy,width,height)
 	if not self.collisionboxValues then self.collisionboxValues = {} end
-	table.insert(self.collisionboxValues,{hx,hy,width,height}) -- place the hurtboxes in the relative grid
-	-- This makes initializing hurtboxes consistent regardless of character position
+	table.insert(self.collisionboxValues,{hx,hy,width,height}) -- place the collisionboxes in the relative grid
 end
 
 local function __copy(self)
@@ -104,7 +103,7 @@ local function __copy(self)
 end
 
 function state:copy()
-	local nt = {__base = self}
+	local nt = {}
 	for k,v in pairs(self) do
 		nt[k] = v
 	end
@@ -154,4 +153,5 @@ end
 
 function state:init()
 end
+
 return state

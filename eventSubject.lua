@@ -1,4 +1,5 @@
 local events = {} --two-dimensional array holding events and their corresponding listeners
+setmetatable(events,{__mode = 'ak'})
 
 function distributeEvents(event,a,b,c,d,e)
 		for k,v in pairs(events) do
