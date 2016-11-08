@@ -11,16 +11,28 @@ function love.run()
 	if love.timer then love.timer.step() end
  
 	local dt = 0
-	local accumulator = 0.0
+	local accumulator = 0.0 --acumulator holding the "unprocessed" time
+	local lastUpdated = love.timer.getTime()--Last time FPS were updated
+	local frameNumber = 0--Number of frames this second
 	local lastFrame = 0
 	-- Main loop time.
 	while true do
-		if love.timer then
-			love.timer.step()
-			dt = love.timer.getDelta()
+		fps = love.timer.getFPS()
+		--check FPS
+		if(love.timer.getTime()-lastUpdated >= 1) then
+			local overhead = ((love.timer.getTime()-lastUpdated)-1)*60--Account for overhead time due to the check being called seldomly
+			lastUpdated = love.timer.getTime()
+			frameNumber = 0
 		end
+		--update the accumulator
 		accumulator = accumulator + dt
-		if(accumulator >= 1/60) then
+		--If it is time for another tick calculate the tick
+		if(love.timer.getTime()-lastFrame >= 1/60) then
+			lastFrame = love.timer.getTime()
+			if love.timer then
+				love.timer.step()
+				dt = love.timer.getDelta()
+			end
 			accumulator = accumulator - 1/60
 			if love.event then
 				love.event.pump()
@@ -44,8 +56,7 @@ function love.run()
 				if love.draw then love.draw() end
 				love.graphics.present()
 			end
-			fps = 1/(love.timer.getTime()-lastFrame)
-			lastFrame = love.timer.getTime()
+			frameNumber = frameNumber+1
 		end
 	end
 end

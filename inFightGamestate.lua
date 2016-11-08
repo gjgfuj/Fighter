@@ -29,14 +29,14 @@ local handler
 local handler2
 fps = 0--Holds the current fps for the fps display
 local image--Holds the Brett sprite for testing
-local canvas--Canvas to draw the game world before scaling it
+local canvas--Canvas to draw the character layer before scaling it
 local background = love.graphics.newCanvas(5200,360)
 local playCamera
 local activeGUI
 
 local function makeTestChar(toMake,opponent)
 	toMake.image = image
-	local forwardMedium = attack(toMake,opponent,10,5,20,{{54,30,42,19}},33,10,hitstun(opponent,toMake,60,33),hitstun(opponent,toMake,30,33))--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
+	local forwardMedium = attack(toMake,opponent,10,5,20,{{74,41,56,25}},33,10,hitstun(opponent,toMake,60,33),hitstun(opponent,toMake,30,33))--pass hitboxes differently, e.g only coordinates for the attack to construct them in update
 	forwardMedium.inStartup = function (self) local vel = 6 if not self.c1.lookingRight then vel = -vel end   self.c1:move(vel,0,self.c2) end
 	forwardMedium.inRecovery = function (self) local vel = -3 if not self.c1.lookingRight then vel = -vel end  self.c1:move(vel,0,self.c2)end
 	local fireballAttack = attack(toMake,opponent,15,1,0,{})
@@ -120,7 +120,7 @@ local function makeTestChar(toMake,opponent)
 	standingState:addHurtbox(80,7,19,19)
 	toMake:setstanding(standingState)
 	
-	crouchingMP = attack(toMake,opponent,5,3,10,{{65,80,42,19}})
+	crouchingMP = attack(toMake,opponent,5,3,10,{{87,107,56,25}})
 	crouchingMP:addHurtbox(29,66,38,39)
 	crouchingMP:addHurtbox(0,134,87,47)
 	crouchingMP:addHurtbox(0,105,80,28)
@@ -269,7 +269,7 @@ function inFightGamestate.draw()
 	love.graphics.setColor(255,255,255)
 
 	--Print debug information
-	love.graphics.print("FPS:"..math.floor(fps),0,0)
+	love.graphics.print("FPS:"..fps,0,0)
 	love.graphics.print("c1 - x:"..c1.x.." y:"..c1.y,300,0)
 	love.graphics.print("c2 - x:"..c2.x.." y:"..c2.y,700,0)
 	love.graphics.print("Camera:"..playCamera.x,0,100)

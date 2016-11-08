@@ -206,7 +206,7 @@ function inputHandler.joystickhat(joystick, hat,direction)
 end
 
 function inputHandler.keypressed(key)
-	if key == "p" then startGame() end
+	if key == "p" then switchGamestate(require "startGamestate")  end
 	for k,v in ipairs(inputHandlers) do
 		if v.device == "keyboard" then
 			inp = v.mapping[key]
