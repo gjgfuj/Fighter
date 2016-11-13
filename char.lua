@@ -97,7 +97,7 @@ end
 
 function char:move(xVel,yVel,otherChar,ignoreCollision)
 	local collision,distance = checkCollision(self,otherChar,xVel,yVel) 
-	if (ignoreCollision and not collision=="border") or not collision then
+	if (ignoreCollision and not (collision=="border")) or not collision then
 			self:__doMove(xVel,yVel)
 	elseif collision == "player" and not (checkCollision(otherChar,self,xVel,yVel)=="border")  then 
 		otherChar:move(xVel/2,0,self,true)
@@ -119,8 +119,8 @@ function flipBox(box,width,self)-- takes a rect and flips it width refers to the
 		box:setX(-nx+self.x) --mirror the upper right corner,as width and height stay the same it falls into place
 end
 
-function char:flip(width)--this one's most likely temporary
-	width = 75
+function char:flip()
+	width = self.state:getWidth()
 	self.lookingRight = not self.lookingRight 
 	if self.lookingRight then
 		self.back = 'l'
@@ -129,17 +129,7 @@ function char:flip(width)--this one's most likely temporary
 		self.back ='r'
 		self.forward = 'l'
 	end
-
-	self.width = width
-	for k,v in ipairs(self.state.hurtboxes) do 
-		flipBox(v,width,self)
-	end
-	for k,v in ipairs(self.state.collisionboxes) do
-		flipBox(v,width,self)
-	end
-	if self.state.hitboxes then for k,v in ipairs(self.state.hitboxes) do
-		flipBox(v,width,self)
-	end end
+	self.state:flipBoxes()
 	self:ensureMapLimits()
 end
 
@@ -150,6 +140,7 @@ function char:draw(coord,name)
 	else
 		love.graphics.draw(self.image,self.x,self.y,0,-1,1,self.image:getWidth(),0)
 	end]]
+	love.graphics.setColor(0,255,0)
 	for k,v in ipairs(self.state.collisionboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height) end
 	love.graphics.setColor(255,0,0)--set color to red
 	for k,v in ipairs(self.state.hurtboxes) do love.graphics.rectangle("line",v.x,v.y,v.width,v.height)	end -- draw hurtboxes for debugging
@@ -234,6 +225,10 @@ end
 
 function char:getHeight()
 	return self:getBottom() - self.y
+end
+
+function char:getWidth()
+	return self.state:getWidth()
 end
 
 --inner class hurtbox

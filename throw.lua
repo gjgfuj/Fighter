@@ -11,6 +11,7 @@ function throw:__call(c1,c2,s,a,r,throwb,damage,partnerState,execution)--partner
 	local nt = attack(c1,c2,s,a,r,throwb,damage,0,partnerState)
 	setmetatable(nt,{__index=throw})
 	nt.execution = execution
+	nt.execution.duration = nt.effect:predictLength()
 	return nt
 end
 

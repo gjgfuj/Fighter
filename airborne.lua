@@ -17,7 +17,7 @@ function airborne:update()
 		if self.fallbackState and not self.fallbackState.hurtboxValues then self.fallbackState:acquireBoxes() end
 		self:fallback()
 	else
-		self.yVel=self.yVel+0.25
+		self.yVel=self.yVel+0.75
 		self.c1:move(self.xVel,self.yVel,self.c2,true)
 	end
 	if self.yVel > 0 then for k,v in ipairs(self.collisionboxes) do
@@ -26,11 +26,11 @@ function airborne:update()
 				local vmid = v.x + (v.endx - v.x)/2
 				local v2mid = v2.x + (v2.endx-v2.x)/2
 				if vmid >= v2mid then 
-					self.c1:move(2,0,self.c2,true)
-					self.c2:move(-2,0,self.c1,true)
+					self.c1:move(5,0,self.c2,true)
+					self.c2:move(-5,0,self.c1,true)
 				else
-					self.c1:move(-2,0,self.c2,true)
-					self.c2:move(2,0,self.c1,true)
+					self.c1:move(-5,0,self.c2,true)
+					self.c2:move(5,0,self.c1,true)
 				end
 			end
 		end

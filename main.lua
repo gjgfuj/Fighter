@@ -10,22 +10,10 @@ function love.run()
 	-- We don't want the first frame's dt to include time taken by love.load.
 	if love.timer then love.timer.step() end
  
-	local dt = 0
-	local accumulator = 0.0 --acumulator holding the "unprocessed" time
-	local lastUpdated = love.timer.getTime()--Last time FPS were updated
-	local frameNumber = 0--Number of frames this second
+	local dt
 	local lastFrame = 0
 	-- Main loop time.
 	while true do
-		fps = love.timer.getFPS()
-		--check FPS
-		if(love.timer.getTime()-lastUpdated >= 1) then
-			local overhead = ((love.timer.getTime()-lastUpdated)-1)*60--Account for overhead time due to the check being called seldomly
-			lastUpdated = love.timer.getTime()
-			frameNumber = 0
-		end
-		--update the accumulator
-		accumulator = accumulator + dt
 		--If it is time for another tick calculate the tick
 		if(love.timer.getTime()-lastFrame >= 1/60) then
 			lastFrame = love.timer.getTime()
@@ -33,7 +21,6 @@ function love.run()
 				love.timer.step()
 				dt = love.timer.getDelta()
 			end
-			accumulator = accumulator - 1/60
 			if love.event then
 				love.event.pump()
 				for name, a,b,c,d,e,f in love.event.poll() do
@@ -50,19 +37,18 @@ function love.run()
 			if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
 	 
 			if love.graphics and love.graphics.isActive() then
-				love.graphics.setBackgroundColor(0,0,255)
 				love.graphics.clear(love.graphics.getBackgroundColor())
 				love.graphics.origin()
 				if love.draw then love.draw() end
 				love.graphics.present()
 			end
-			frameNumber = frameNumber+1
 		end
 	end
 end
 
 function love.load()
 	love.graphics.setDefaultFilter("nearest","nearest",1)
+	love.graphics.setBackgroundColor(0,0,255)
 	love.window.setMode(640,360,{["fullscreen"] = true,["fullscreentype"]= "desktop", ["vsync"] = true})
 
 	activeGameState.load()

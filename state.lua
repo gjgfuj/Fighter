@@ -139,6 +139,28 @@ function state:getBottom()
 	return maximum
 end
 
+function state:getWidth()
+	local max = 0
+	for k,v in ipairs(self.collisionboxes) do
+		if v.endx > max then 
+			max = v.endx
+		end
+	end
+	return math.abs(max-self.c1.x)
+end
+
+function state:flipBoxes()
+	for k,v in ipairs(self.hurtboxes) do 
+		flipBox(v,width,self.c1)
+	end
+	for k,v in ipairs(self.collisionboxes) do
+		flipBox(v,width,self.c1)
+	end
+	if self.hitboxes then for k,v in ipairs(self.hitboxes) do
+		flipBox(v,width,self.c1)
+	end end
+end
+
 function state:acquireBoxes()
 	self.hurtboxValues,self.collisionboxValues = self.c1:supplyBoxes()
 end

@@ -22,4 +22,23 @@ function knockdown:acquireBoxes()
 	self.collisionboxValues = self.c1.knockupCollisionboxes
 end
 
+function knockdown:flipBoxes()
+	state.flipBoxes(self)
+	if not self.c1.lookingRight then
+		for k,v in ipairs(self.collisionboxes) do
+			v:setX(v.x + self:getWidth())
+		end
+		for k,v in ipairs(self.hurtboxes) do 
+			v:setX(v.x + self:getWidth())
+		end
+	else
+		for k,v in ipairs(self.collisionboxes) do
+			v:setX(v.x - self:getWidth())
+		end
+		for k,v in ipairs(self.collisionboxes) do
+			v:setX(v.x - self:getWidth())
+		end
+	end
+end
+
 return knockdown
