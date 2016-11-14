@@ -173,6 +173,16 @@ function state:setState(toSet)
 	self.c1.state = toSet:copy()
 end
 
+function state:getCollisionStart()
+	local buffer
+	for k,v in ipairs(self.collisionboxes) do
+		if not buffer or v.x < buffer then
+			buffer = v.x
+		end
+	end
+	return buffer
+end
+
 function state:init()
 end
 

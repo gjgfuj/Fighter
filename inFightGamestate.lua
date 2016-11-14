@@ -46,7 +46,7 @@ local function makeTestChar(toMake,opponent)
 	heavyPunch.effect.fallbackState = knockdown(opponent,toMake,300)
 	heavyPunch.effect.overwriteVel = true
 	
-	local thrownState = thrown(opponent,toMake,{thrown.straightLine(opponent,toMake,-140,-7)})
+	local thrownState = thrown(opponent,toMake,{thrown.straightLine(opponent,toMake,-154,-7,7)})
 	thrownState:addCollisionbox(0,0,70,181)
 	local throwingState = throwing(toMake,opponent,45)
 	throwingState:addCollisionbox(0,0,70,181)

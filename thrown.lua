@@ -7,13 +7,16 @@ setmetatable(thrown,thrown)
 
 thrown.__index = state
 
-function thrown:__call(c1,c2,movements)
+function thrown:__call(c1,c2,movements,offsetX,offsetY)
 	local nt = state(c1,c2,{},{},{},{})
 	nt.duration = duration
 	nt.movements = movements
 	nt.currPosition = 0
 	nt.fallbackState = knockdown(c1,c2,30)--TODO set from outside
 	nt.length = 0
+	--Define the starting offset of the thrown character to the throwing one
+	nt.offsetX = offsetX or 0
+	nt.offsetY = offsetY or 0
 	setmetatable(nt,{__index = thrown})
 	return nt
 end
@@ -65,6 +68,11 @@ end
 
 function thrown:init()
 	self.turned = not self.c2.lookingRight
+	if self.turned then
+		self.c1:move((self.c2:getCollisionStart()-1)-self.c1.x-self.c1:getWidth()-self.offsetX,0,self.c2,true)
+	else
+		self.c1:move((self.c2.x+self.c2:getWidth()+1)-self.c1.x+self.offsetX,0,self.c2,true)
+	end
 end
 --Inner classes of type 'movement'
 
@@ -104,6 +112,7 @@ function straightLine:predictLength()
 	end
 	return result
 end
+
 
 thrown.straightLine = straightLine
 

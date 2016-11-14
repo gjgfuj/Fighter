@@ -231,6 +231,10 @@ function char:getWidth()
 	return self.state:getWidth()
 end
 
+function char:getCollisionStart()
+	return self.state:getCollisionStart()
+end
+
 --inner class hurtbox
 local hurtbox = {}
 setmetatable(hurtbox,hurtbox)
