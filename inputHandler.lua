@@ -103,7 +103,6 @@ end
 function inputHandler:update()
 	--Update the timers of the inputs each frame
 	for k,inp in invertIpairs(self.inputList) do
-		assert(inp.timer >= 0,"inp.timer is: "..inp.timer)
 		inp.timer = inp.timer -1
 		if inp.timer <= 0 then table.remove(self.inputList,k) end
 	end
@@ -157,7 +156,6 @@ end
 --period: The period of times all taps must have occured in
 --The first input found is also required to be 'frame-fresh'
 function inputHandler:multiTap(input,amount,period)
-	assert (period <= INPUT_PERSISTENCE,"period exceeds input persistence.\n Period: "..period.." Persistence: "..INPUT_PERSISTENCE)
 	for k,v in invertIpairs(self.inputList) do
 		if v.value == input and v.timer >= INPUT_PERSISTENCE then
 			for i = k,k-(amount-1),-1 do

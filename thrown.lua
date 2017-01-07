@@ -85,12 +85,10 @@ function straightLine:__call(c1,c2,len,step)
 	 local nt = {c1,c2,len = len,step = step}
 	 setmetatable(nt,{__index = straightLine})
 	 --Make sure that the entire length can be exactly traversed with step
-	 assert(len%step == 0,"Len is not divisible by step!")
 	 return nt
 end
 
 function straightLine:iterator()
-	assert(self.step and self.len)
 	local passedWay = 0
 	local len = self.len
 	local step = self.step

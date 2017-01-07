@@ -4,10 +4,13 @@ local camera = require("camera")
 local playCamera = camera()
 local rotation = 0;
 local char = {}
+
 setmetatable(char,char)
+
 function char:__index(key)
 	return rawget(char,key)
 end
+
 function char:__call(nx,ny,handler)
 	local c = {x = nx,  y = ny,collisionboxes = {},hurtboxes = {}, lookingRight =true, width = 0, handler = handler, word = "none", back = 'l', forward = 'r',bonus = {},bonusIndexes = {}, knockupHurtboxes = {}, knockupCollisionboxes = {},throwboxes = {},health = 1000}
 	setmetatable(c,char)
